@@ -1,0 +1,54 @@
+/* Ensure the HTML and body take up the full height of the viewport */
+html,
+body,
+p {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
+.box-shadow {
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2);
+}
+
+.print {
+  @media print {
+    display: none;
+  }
+}
+@media print {
+  body {
+    margin: 0;
+    padding: 0;
+  }
+}
+
+@page {
+  margin: 0;
+}
+
+.layout-print {
+  @media print {
+    margin: 0 !important;
+  }
+}
+
+.content-print {
+  @media print {
+    margin: 0 !important;
+  }
+}
+
+.page-heading {
+  text-align: center;
+  font-weight: bold;
+  font-size: 30px;
+  margin: 16px 0;
+  text-transform: uppercase;
+  color: white;
+  background-color: #001529;
+}

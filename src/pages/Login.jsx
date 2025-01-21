@@ -1,0 +1,74 @@
+import React from 'react'
+// import classes from "../css/pages/login.css";
+import "../css/pages/login.css";
+import { Form, Input, Button } from 'antd';
+function Login() {
+  return (
+    <div className="login-container">
+      <div className="login-header">
+        <img className="logo-image" src="/images/biharlogo.png" alt="" />
+
+        <div>
+          <h2 style={{ color: "red" }}>DPED EXAMINATION APPLICATION FORM</h2>
+        </div>
+        <div>
+          <p>Help Email-: dpedhelpdesk@gmail.com</p>
+        </div>
+      </div>
+
+     
+      <div className="login-content">
+        <div className="form-container">
+          <div className="form-content">
+            <div className="content">
+              
+                <div>
+                  <div style={{ textAlign: "center", marginBottom: "16px" }}>
+                    <h1>Login</h1>
+                  </div>
+                  <Form
+                    name="loginForm"
+                    layout="vertical"
+                  >
+                    <Form.Item
+                      label="College Code"
+                      name="code"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please enter College Code",
+                        },
+                      ]}
+                    >
+                      <Input placeholder="College code" />
+                    </Form.Item>
+
+                    <Form.Item
+                      label="Password"
+                      name="password"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please enter your password",
+                        },
+                      ]}
+                    >
+                      <Input.Password placeholder="password" />
+                    </Form.Item>
+                    <Form.Item>
+                      <Button type="primary" htmlType="submit">
+                        Log in
+                      </Button>
+                    </Form.Item>
+                  </Form>
+                </div>
+            
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default Login
