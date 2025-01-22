@@ -71,6 +71,7 @@ function Dashboard() {
           }}
           className="content-print"
         >
+          
           <Outlet />
           {/* <Home/> */}
           {/* <Students/> */}

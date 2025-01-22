@@ -1,8 +1,25 @@
-import React from 'react'
-// import classes from "../css/pages/login.css";
+import React, { useState } from 'react'
 import "../css/pages/login.css";
 import { Form, Input, Button } from 'antd';
+import { loginUser } from "../api/auth";
+import { login } from "../reducers/authSlice";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 function Login() {
+  const [loginState, setLoginState] = useState("login");
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const onFinishLogin = async (values) => {
+    try {
+      const { data } = await loginUser(values);
+      dispatch(login(data));
+      navigate("/");
+    } catch (error) {
+      notification.error({ message: error.message || "something went wrong" });
+    }
+  };
+
   return (
     <div className="login-container">
       <div className="login-header">
@@ -21,13 +38,14 @@ function Login() {
         <div className="form-container">
           <div className="form-content">
             <div className="content">
-              
+            {loginState === "login" && (
                 <div>
                   <div style={{ textAlign: "center", marginBottom: "16px" }}>
                     <h1>Login</h1>
                   </div>
                   <Form
                     name="loginForm"
+                    onFinish={onFinishLogin}
                     layout="vertical"
                   >
                     <Form.Item
@@ -62,7 +80,7 @@ function Login() {
                     </Form.Item>
                   </Form>
                 </div>
-            
+            )}  
             </div>
           </div>
         </div>

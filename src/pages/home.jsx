@@ -1,8 +1,9 @@
-import React, { useState } from "react";
-import { Select, Button, Row, Col, Form, Table, Space } from "antd";
+import React, { useEffect, useState } from "react";
+import { Select, Button, Row, Col, Form, Table, Checkbox, notification, Tag } from "antd";
 import { DROPDOWNS } from "../utills/common";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
+import { getAllCandidates } from "../api/auth";
 
 function Home() {
   const navigate = useNavigate();
@@ -35,18 +36,49 @@ function Home() {
   ];
 
   const [students, setStudents] = useState(staticStudents);
+  const [selectedStudents, setSelectedStudents] = useState([]);
+  const [isAllSelected, setIsAllSelected] = useState(false);
 
   const onFinish = (values) => {
     console.log("Form values:", values);
-    // Since the data is static, no API call is made here.
+    
   };
 
-  
+  const handleSelectChange = (id) => {
+    setSelectedStudents((prevSelected) =>
+      prevSelected.includes(id)
+        ? prevSelected.filter((studentId) => studentId !== id)
+        : [...prevSelected, id]
+    );
+  };
+
+  const handleSelectAllChange = () => {
+    if (isAllSelected) {
+      setSelectedStudents([]); 
+    } else {
+      setSelectedStudents(students.map((student) => student.id)); 
+    }
+    setIsAllSelected(!isAllSelected); 
+  };
+
   const columns = [
     {
-      title: "S.No",
-      dataIndex: "s_no",
-      key: "serial no",
+      title: (
+        <Checkbox
+          indeterminate={
+            selectedStudents.length > 0 && selectedStudents.length < students.length
+          }
+          checked={isAllSelected}
+          onChange={handleSelectAllChange}
+        />
+      ),
+      key: "select",
+      render: (text, record) => (
+        <Checkbox
+          checked={selectedStudents.includes(record.id)}
+          onChange={() => handleSelectChange(record.id)}
+        />
+      ),
     },
     {
       title: "Student Name",
@@ -66,19 +98,14 @@ function Home() {
       key: "dob",
     },
     {
-      title: "Registration Number",
-      dataIndex: "reg_no",
-      key: "registration_no",
-    },
-    {
       title: "Status",
-      key: "status",
+      key: "application_state",
       render: (text, record) => (
         <span>
-          {record.state === "saved" ? (
-            <p style={{ color: "#942210" }}>Pending</p>
+          {record.application_state == "saved" ? (
+           <Tag color="yellow" title="Pending">Pending</Tag>
           ) : (
-            <p style={{ color: "green" }}>{record.state}</p>
+            <Tag color="green" title="Pending">Submitted</Tag>
           )}
         </span>
       ),
@@ -87,58 +114,37 @@ function Home() {
       title: "Action",
       key: "action",
       render: (text, record) => (
-        <Button type="primary" >
-          View
+        <Button type="primary"  onClick={() => navigate(`/edit-student/${record.id}`)}>
+          Edit
         </Button>
       ),
     },
   ];
 
+  const [data,setData] = useState([])
+  const getAllRecords = async () => {
+    try {
+       const { data } = await getAllCandidates();
+       setData(data)
+       console.log(data)
+    } catch (error) {
+      notification.error({ message: error.message || "something went wrong" });
+    }
+  }
+
+  useEffect(()=>{
+    getAllRecords()
+  },[])
 
   return (
-    <div    >
-      <Form onFinish={onFinish} >
-        <Row gutter={16}   style={{ display:"flex"}}>
-          <Col span={6}>
-            <Form.Item
-              name="session"
-              rules={[{ required: true, message: "Please select a session" }]}
-            >
-              <Select
-                options={DROPDOWNS.SESSION}
-                style={{ width: "100%" }}
-                placeholder="Select Session"
-              />
-            </Form.Item>
-          </Col>
-          <Col span={6}>
-            <Form.Item
-              name="year"
-              rules={[{ required: true, message: "Please select a year" }]}
-            >
-              <Select
-                options={DROPDOWNS.YEAR}
-                style={{ width: "100%" }}
-                placeholder="Select year"
-              />
-            </Form.Item>
-          </Col>
-          <Col span={6}>
-            <Form.Item
-              name="exam_type"
-              rules={[
-                { required: true, message: "Please select an exam type" },
-              ]}
-            >
-              <Select
-                options={DROPDOWNS.EXAM_TYPE}
-                style={{ width: "100%" }}
-                placeholder="Exam Type"
-              />
-            </Form.Item>
-          </Col>
-          <Col span={6}>
-            <Button  onClick={() => navigate("/dashboard/add-student")} type="primary" >
+    <div>
+      <Form onFinish={onFinish}>
+        <Row gutter={16} style={{ display: "flex" }}>
+        <Col span={12}>
+          <h2>Students</h2>
+        </Col>
+          <Col span={12} style={{ textAlign: "right" }}>
+            <Button onClick={() => navigate("/add-student")} type="primary">
               Add Student
             </Button>
           </Col>
@@ -146,11 +152,10 @@ function Home() {
       </Form>
 
       <Table
-        dataSource={students.map((s, i) => ({ ...s, s_no: i + 1 }))}
+        dataSource={data}
         columns={columns}
         pagination={false}
       />
-
     </div>
   );
 }

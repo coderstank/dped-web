@@ -4,10 +4,11 @@ import { UploadOutlined } from '@ant-design/icons';
 import { useParams,useNavigate } from 'react-router-dom';
 const { Option } = Select;
 import { useDispatch } from "react-redux";
-import { AddCandidate } from '../api/auth';
+import { AddCandidate, getCandidatesById, updateCandidatesById } from '../api/auth';
 import { setUser } from '../reducers/authSlice';
 import UploadFile from "../components/UploadFile";
-function Students() {
+function EditStudents() {
+    const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [form] = Form.useForm();
@@ -76,43 +77,30 @@ function Students() {
       try {
         delete values.email
         delete values.identification_marks_2
-        // values.sign = 'sign';
-        // values.photo = 'photo'
         console.log(values)
-         const { data } = await AddCandidate(values);
-         notification.success('Student record is saved')
+         const { data } = await updateCandidatesById(id,values);
+         notification.success('Candidate updated successfully!')
         navigate("/");
       } catch (error) {
         notification.error({ message: error.message || "something went wrong" });
       }
     };
 
-  const handleBeforeUpload = (file) => {
-    const isValidSize = file.size / 1024 / 1024 < 1; 
-    if (!isValidSize) {
-      alert('File must be smaller than 1MB');
-    }
-    return isValidSize;
-  };
-  
+    const fetchCandidate = async () => {
+        try {
+          const { data } = await getCandidatesById(id);
+          form.setFieldsValue(data); 
+        } catch (error) {
+          notification.error({
+            message: "Error fetching candidate data",
+            description: error.message || "Something went wrong",
+          });
+        }
+      };
+      useEffect(() => {
+        fetchCandidate();
+      }, [id]);
  
-  const handleChange = (info, fieldName) => {
-    let updatedFileList = [...info.fileList];
-    updatedFileList = updatedFileList.slice(-1); 
-    setFileList((prev) => ({
-      ...prev,
-      [fieldName]: updatedFileList,
-    }));
-  };
-
-  
- 
-  const normFile = (e, fieldName) => {
-    if (Array.isArray(e)) {
-      return e;
-    }
-    return e && e.fileList;
-  };
 
 
   return (
@@ -325,7 +313,10 @@ function Students() {
                   label="Specify Nationality"
                   rules={[{ required: true, message: "Please specify nationality" }]}
                 >
-                  <Input placeholder="Enter nationality" />
+                  <Input placeholder="Enter nationality" 
+                  
+                  onChange={(e) => handleUppercase('otherNationality', e.target.value)}
+                  />
                 </Form.Item>
               )}
             </Col>
@@ -384,7 +375,9 @@ function Students() {
                   label="Specify Disability"
                   rules={[{ required: true, message: "Please specify Disability" }]}
                 >
-                  <Input placeholder="Enter Disability" />
+                  <Input placeholder="Enter Disability" 
+                  onChange={(e) => handleUppercase('differently_abled_others', e.target.value)}
+                  />
                 </Form.Item>
               )}
             </Col>
@@ -435,7 +428,8 @@ function Students() {
                   label="Specify Religion"
                   rules={[{ required: true, message: "Please specify Religion" }]}
                 >
-                  <Input placeholder="Enter Religion" />
+                  <Input placeholder="Enter Religion" 
+                  onChange={(e) => handleUppercase('religion_others', e.target.value)}/>
                 </Form.Item>
               )}
             </Col>
@@ -663,7 +657,7 @@ function Students() {
     </Row>
           <Form.Item>
             <Button style={{width:"100%",marginTop:"20px"}} type="primary" htmlType="submit">
-              Submit
+              Update
             </Button>
           </Form.Item>
         </Form>
@@ -672,4 +666,4 @@ function Students() {
   );
 }
 
-export default Students;
+export default EditStudents;

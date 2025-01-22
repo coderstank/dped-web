@@ -8,12 +8,17 @@ const items=[
    { 
         key:'1',
         icon:<FileOutlined />,
-        label:<Link to="/dashboard">Exam Form</Link>,
+        label:<Link to="/">Students</Link>,
    },
    {
         key: "2",
         icon: <DollarOutlined />,
-        label: <Link to="/dashboard/add-student">Add Student</Link>,
+        label: <Link to="add-student">Add Student</Link>,
+  },
+   {
+        key: "3",
+        icon: <DollarOutlined />,
+        label: <Link to="edit-student/234">Edit Student</Link>,
   },
 ]
 
