@@ -3,14 +3,15 @@ import {  Form,  Input,  Select,  DatePicker,  Button, Card, Row, Col, Upload, n
 import { UploadOutlined } from '@ant-design/icons';
 import { useParams,useNavigate } from 'react-router-dom';
 const { Option } = Select;
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { AddCandidate, getCandidatesById, updateCandidatesById } from '../api/auth';
-import { setUser } from '../reducers/authSlice';
+import { setLoading, setUser } from '../reducers/authSlice';
 import UploadFile from "../components/UploadFile";
 function EditStudents() {
     const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const {isLoading} = useSelector(state=>state.auth)
   const [form] = Form.useForm();
 
   const handleUppercase = (fieldName, value) => {
@@ -74,27 +75,38 @@ function EditStudents() {
 
   
     const onFinishLogin = async (values) => {
+
       try {
+        dispatch(setLoading(true))
         delete values.email
         delete values.identification_marks_2
-        console.log(values)
          const { data } = await updateCandidatesById(id,values);
          notification.success('Candidate updated successfully!')
         navigate("/");
       } catch (error) {
         notification.error({ message: error.message || "something went wrong" });
       }
+      finally{
+        dispatch(setLoading(false))
+      }
     };
 
     const fetchCandidate = async () => {
         try {
+          dispatch(setLoading(true))
           const { data } = await getCandidatesById(id);
           form.setFieldsValue(data); 
+          setDisablity(data.differently_abled)
+          setNationality(data.nationality)
+          setReligion(data.religion)
         } catch (error) {
           notification.error({
             message: "Error fetching candidate data",
             description: error.message || "Something went wrong",
           });
+        }
+        finally{
+          dispatch(setLoading(true))
         }
       };
       useEffect(() => {
@@ -272,7 +284,7 @@ function EditStudents() {
                 name="gender"
                 label="Gender"
                 rules={[{ required: true, message: 'Please select gender' }]}>
-                <Select placeholder="Select gender">
+                <Select style={{textTransform:'uppercase'}} placeholder="Select gender">
                   <Option value="MALE">MALE</Option>
                   <Option value="FEMALE">FEMALE</Option>
                   <Option value="TRANSGENDER">TRANSGENDER</Option>
@@ -284,7 +296,7 @@ function EditStudents() {
                 name="category"
                 label="Caste Category"
                 rules={[{ required: true, message: 'Please select category' }]}>
-                <Select placeholder="Select category">
+                <Select style={{textTransform:'uppercase'}} placeholder="Select category">
                   <Option value="GENERAL">GENERAL</Option>
                   <Option value="SC">SC</Option>
                   <Option value="ST">ST</Option>
@@ -299,23 +311,23 @@ function EditStudents() {
                 name="nationality"
                 label="Nationality"
                 rules={[{ required: true, message: 'Please select nationality' }]}>
-                <Select placeholder="Select nationality"
+                <Select style={{textTransform:'uppercase'}} placeholder="Select nationality"
                 value={nationality}
                 onChange={handleNationalityChange}
                 >
                   <Option value="INDIAN">INDIAN</Option>
-                  <Option value="OTHER">OTHER</Option>
+                  <Option value="OTHERS">OTHERS</Option>
                 </Select>
               </Form.Item>
-              {nationality === "OTHER" && (
+              {nationality === "OTHERS" && (
                 <Form.Item
-                  name="otherNationality"
+                  name="nationality_others"
                   label="Specify Nationality"
                   rules={[{ required: true, message: "Please specify nationality" }]}
                 >
                   <Input placeholder="Enter nationality" 
                   
-                  onChange={(e) => handleUppercase('otherNationality', e.target.value)}
+                  onChange={(e) => handleUppercase('nationality_others', e.target.value)}
                   />
                 </Form.Item>
               )}
@@ -346,7 +358,7 @@ function EditStudents() {
                 name="exam_medium"
                 label="Medium"
                 rules={[{ required: true, message: 'Please select ' }]}>
-                <Select placeholder="Select Medium " >
+                <Select style={{textTransform:'uppercase'}} placeholder="Select Medium " >
                   <Option value="HINDI">HINDI</Option>
                   <Option value="ENGLISH">ENGLISH</Option>
                  
@@ -361,7 +373,7 @@ function EditStudents() {
                 name="differently_abled"
                 label="Differently Abled"
                 rules={[{ required: true, message: 'Please select ' }]}>
-                <Select placeholder="Please select" 
+                <Select style={{textTransform:'uppercase'}} placeholder="Please select" 
                 value={nationality}
                 onChange={handleDisabledChange}
                 >
@@ -386,7 +398,7 @@ function EditStudents() {
                 name="marital_status"
                 label="Marital Status"
                 rules={[{ required: true, message: 'Please select' }]}>
-                <Select placeholder="Select marital status">
+                <Select style={{textTransform:'uppercase'}} placeholder="Select marital status">
                   <Option value="MARRID">MARRID</Option>
                   <Option value="UNMARRIED">UNMARRIED</Option>
                 </Select>
@@ -397,7 +409,7 @@ function EditStudents() {
                 name="area"
                 label="Area"
                 rules={[{ required: true, message: 'Please select area' }]}>
-                <Select placeholder="Select area">
+                <Select style={{textTransform:'uppercase'}} placeholder="Select area">
                   <Option value="RURAL">RURAL</Option>
                   <Option value="URBAN">URBAN</Option>
                 </Select>
@@ -410,7 +422,7 @@ function EditStudents() {
                 name="religion"
                 label="Religion"
                 rules={[{ required: true, message: 'Please select religion' }]}>
-                <Select placeholder="Select religion"
+                <Select style={{textTransform:'uppercase'}} placeholder="Select religion"
                 value={religion}
                 onChange={handleReligionChange}
                 >
@@ -419,10 +431,10 @@ function EditStudents() {
                   <Option value="SIKHISM">SIKHISM</Option>
                   <Option value="CHRISTIAN">CHRISTIAN</Option>
                   <Option value="JAINISM">JAINISM</Option>
-                  <Option value="OTHER">OTHER</Option>
+                  <Option value="OTHERS">OTHERS</Option>
                 </Select>
               </Form.Item>
-              {religion === "OTHER" && (
+              {religion === "OTHERS" && (
                 <Form.Item
                   name="religion_others"
                   label="Specify Religion"
@@ -656,7 +668,9 @@ function EditStudents() {
      
     </Row>
           <Form.Item>
-            <Button style={{width:"100%",marginTop:"20px"}} type="primary" htmlType="submit">
+            <Button
+            disabled={!isLoading}
+            style={{width:"100%",marginTop:"20px"}} type="primary" htmlType="submit">
               Update
             </Button>
           </Form.Item>

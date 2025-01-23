@@ -3,13 +3,13 @@ import "../css/pages/login.css";
 import { Form, Input, Button } from 'antd';
 import { loginUser } from "../api/auth";
 import { login } from "../reducers/authSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 function Login() {
   const [loginState, setLoginState] = useState("login");
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const { isAuthenticated, isLoading } = useSelector((state) => state.auth);
   const onFinishLogin = async (values) => {
     try {
       const { data } = await loginUser(values);

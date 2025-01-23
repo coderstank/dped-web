@@ -18,6 +18,11 @@ export const updateCandidatesById = async (id,data) => {
   return await axios.put(`/candidates/${id}`,data);
 };
 
+export const Payment = async (data) => {
+  return await axios.post(`/payments`,data);
+};
+
+
 export const getCandidates = async (params) => {
   return await axios.get("/candidates", { params });
 };

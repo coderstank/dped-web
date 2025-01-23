@@ -321,7 +321,7 @@ function Students() {
               </Form.Item>
               {nationality === "OTHER" && (
                 <Form.Item
-                  name="otherNationality"
+                  name="nationality_others"
                   label="Specify Nationality"
                   rules={[{ required: true, message: "Please specify nationality" }]}
                 >

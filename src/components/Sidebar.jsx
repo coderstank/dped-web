@@ -15,11 +15,7 @@ const items=[
         icon: <DollarOutlined />,
         label: <Link to="add-student">Add Student</Link>,
   },
-   {
-        key: "3",
-        icon: <DollarOutlined />,
-        label: <Link to="edit-student/234">Edit Student</Link>,
-  },
+   
 ]
 
 function Sidebar() {
