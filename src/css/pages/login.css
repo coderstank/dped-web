@@ -1,38 +1,68 @@
+
 .login-container {
-  .login-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid black;
-    h3 {
-      color: red;
-      font-size: 24px;
-    }
-    .logo-image {
-      height: 50px;
-    }
+  font-family: 'Roboto', sans-serif; 
+}
+
+.login-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid black;
+
+  h2, h3 {
+    font-family: 'Poppins', sans-serif; 
+    color: red;
   }
-  .login-content {
+
+  .logo-image {
+    height: 50px;
+  }
+}
+
+.login-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 50px;
+
+  .form-container {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 50px;
-    .form-container {
-      display: flex;
-      min-height: 300px;
-      border: 1px solid black;
-      padding: 16px;
-      border-radius: 6px;
-      .information {
-        border-right: 1px solid black;
-        padding-right: 16px;
-        min-width: 300px;
+    min-height: 300px;
+    border: 1px solid black;
+    padding: 16px;
+    border-radius: 6px;
+
+    .information {
+      border-right: 1px solid black;
+      padding-right: 16px;
+      min-width: 300px;
+    }
+
+    .form-content {
+      padding-left: 16px;
+      min-width: 300px;
+
+      h1 {
+        font-family: 'Poppins', sans-serif; 
+        font-size: 24px;
+        font-weight: 600;
       }
 
-      .form-content {
-        padding-left: 16px;
-        min-width: 300px;
+      label {
+        font-family: 'Roboto', sans-serif;
+        font-size: 14px;
+      }
+
+      input {
+        font-family: 'Roboto', sans-serif;
+        font-size: 14px;
+      }
+
+      button {
+        font-family: 'Roboto', sans-serif; 
+        font-size: 14px;
+        font-weight: bold;
       }
     }
   }

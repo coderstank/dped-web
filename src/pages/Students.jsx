@@ -33,6 +33,20 @@ function Students() {
     photo: [],
   });
 
+
+  const validate = (_, value) => {
+    if (!value) {
+      return Promise.reject(new Error("Please enter marks"));
+    }
+    const regex = /^(?=.*[a-zA-Z])(?=.*\d).+$/;
+    if (!regex.test(value)) {
+      return Promise.reject(
+        new Error("Marks must contain both numbers and alphabets")
+      );
+    }
+    return Promise.resolve();
+  };
+
   const validateMarks = (_, value) => {
     if (!value || /^\d+(\.\d{1,2})?$/.test(value)) {
       return Promise.resolve();
@@ -44,10 +58,10 @@ function Students() {
     if (!value) {
       return Promise.reject(new Error("Percentage is required"));
     }
-    if (/^\d+(\.\d{1,2})?$/.test(value) && value >= 0 && value <= 100) {
+    if (/^\d+(\.\d{1,2})?$/.test(value) && value >= 33 && value <= 100) {
       return Promise.resolve();
     }
-    return Promise.reject(new Error("Enter a valid percentage (0-100 with up to 2 decimal places)"));
+    return Promise.reject(new Error("Enter a valid percentage (33-100 with up to 2 decimal places)"));
   };
   
   const validateYear = (_, value) => {
@@ -71,17 +85,13 @@ function Students() {
     return Promise.reject(new Error("Only Hindi characters are allowed"));
   };
 
-  
+
     const onFinishLogin = async (values) => {
       try {
-        delete values.email
-        delete values.identification_marks_2
-        // values.sign = 'sign';
-        // values.photo = 'photo'
-        console.log(values)
+      
          const { data } = await AddCandidate(values);
          notification.success('Student record is saved')
-        navigate("/");
+        navigate("/students");
       } catch (error) {
         notification.error({ message: error.message || "something went wrong" });
       }
@@ -284,7 +294,7 @@ function Students() {
                 name="gender"
                 label="Gender"
                 rules={[{ required: true, message: 'Please select gender' }]}>
-                <Select placeholder="Select gender">
+                <Select style={{textTransform:'uppercase'}} placeholder="Select gender">
                   <Option value="MALE">MALE</Option>
                   <Option value="FEMALE">FEMALE</Option>
                   <Option value="TRANSGENDER">TRANSGENDER</Option>
@@ -296,7 +306,7 @@ function Students() {
                 name="category"
                 label="Caste Category"
                 rules={[{ required: true, message: 'Please select category' }]}>
-                <Select placeholder="Select category">
+                <Select style={{textTransform:'uppercase'}} placeholder="Select category">
                   <Option value="GENERAL">GENERAL</Option>
                   <Option value="SC">SC</Option>
                   <Option value="ST">ST</Option>
@@ -311,21 +321,23 @@ function Students() {
                 name="nationality"
                 label="Nationality"
                 rules={[{ required: true, message: 'Please select nationality' }]}>
-                <Select placeholder="Select nationality"
+                <Select style={{textTransform:'uppercase'}} placeholder="Select nationality"
                 value={nationality}
                 onChange={handleNationalityChange}
                 >
                   <Option value="INDIAN">INDIAN</Option>
-                  <Option value="OTHER">OTHER</Option>
+                  <Option value="OTHERS">OTHERS</Option>
                 </Select>
               </Form.Item>
-              {nationality === "OTHER" && (
+              {nationality === "OTHERS" && (
                 <Form.Item
                   name="nationality_others"
                   label="Specify Nationality"
                   rules={[{ required: true, message: "Please specify nationality" }]}
                 >
-                  <Input placeholder="Enter nationality" />
+                  <Input placeholder="Enter nationality" 
+                   onChange={(e) => handleUppercase('nationality_others', e.target.value)}
+                  />
                 </Form.Item>
               )}
             </Col>
@@ -336,7 +348,9 @@ function Students() {
                 name="identification_marks"
                 label="First Identification Mark"
                 rules={[{ required: true, message: 'Please enter the first identification mark' }]}>
-                <Input placeholder="Enter the first identification mark" />
+                <Input placeholder="Enter the first identification mark"
+                
+                onChange={(e) => handleUppercase('identification_marks', e.target.value)}/>
               </Form.Item>
               
             </Col>
@@ -345,7 +359,9 @@ function Students() {
                 name="identification_marks_2"
                 label="Second Identification Mark"
                 rules={[{ required: true, message: 'Please enter the second identification mark' }]}>
-                <Input placeholder="Enter the second identification mark" />
+                <Input placeholder="Enter the second identification mark" 
+                 onChange={(e) => handleUppercase('identification_marks_2', e.target.value)}
+                />
               </Form.Item>
               
             </Col>
@@ -355,7 +371,7 @@ function Students() {
                 name="exam_medium"
                 label="Medium"
                 rules={[{ required: true, message: 'Please select ' }]}>
-                <Select placeholder="Select Medium " >
+                <Select style={{textTransform:'uppercase'}} placeholder="Select Medium " >
                   <Option value="HINDI">HINDI</Option>
                   <Option value="ENGLISH">ENGLISH</Option>
                  
@@ -370,7 +386,7 @@ function Students() {
                 name="differently_abled"
                 label="Differently Abled"
                 rules={[{ required: true, message: 'Please select ' }]}>
-                <Select placeholder="Please select" 
+                <Select style={{textTransform:'uppercase'}} placeholder="Please select" 
                 value={nationality}
                 onChange={handleDisabledChange}
                 >
@@ -384,7 +400,9 @@ function Students() {
                   label="Specify Disability"
                   rules={[{ required: true, message: "Please specify Disability" }]}
                 >
-                  <Input placeholder="Enter Disability" />
+                  <Input placeholder="Enter Disability" 
+                   onChange={(e) => handleUppercase('differently_abled_others', e.target.value)}
+                  />
                 </Form.Item>
               )}
             </Col>
@@ -393,7 +411,7 @@ function Students() {
                 name="marital_status"
                 label="Marital Status"
                 rules={[{ required: true, message: 'Please select' }]}>
-                <Select placeholder="Select marital status">
+                <Select style={{textTransform:'uppercase'}} placeholder="Select marital status">
                   <Option value="MARRID">MARRID</Option>
                   <Option value="UNMARRIED">UNMARRIED</Option>
                 </Select>
@@ -404,7 +422,7 @@ function Students() {
                 name="area"
                 label="Area"
                 rules={[{ required: true, message: 'Please select area' }]}>
-                <Select placeholder="Select area">
+                <Select style={{textTransform:'uppercase'}} placeholder="Select area">
                   <Option value="RURAL">RURAL</Option>
                   <Option value="URBAN">URBAN</Option>
                 </Select>
@@ -417,7 +435,7 @@ function Students() {
                 name="religion"
                 label="Religion"
                 rules={[{ required: true, message: 'Please select religion' }]}>
-                <Select placeholder="Select religion"
+                <Select style={{textTransform:'uppercase'}} placeholder="Select religion"
                 value={religion}
                 onChange={handleReligionChange}
                 >
@@ -426,16 +444,18 @@ function Students() {
                   <Option value="SIKHISM">SIKHISM</Option>
                   <Option value="CHRISTIAN">CHRISTIAN</Option>
                   <Option value="JAINISM">JAINISM</Option>
-                  <Option value="OTHER">OTHER</Option>
+                  <Option value="OTHERS">OTHERS</Option>
                 </Select>
               </Form.Item>
-              {religion === "OTHER" && (
+              {religion === "OTHERS" && (
                 <Form.Item
                   name="religion_others"
                   label="Specify Religion"
                   rules={[{ required: true, message: "Please specify Religion" }]}
                 >
-                  <Input placeholder="Enter Religion" />
+                  <Input placeholder="Enter Religion" 
+                   onChange={(e) => handleUppercase('religion_others', e.target.value)}
+                  />
                 </Form.Item>
               )}
             </Col>
@@ -464,7 +484,7 @@ function Students() {
       name="class_12_board_code"
       label="Class XII passing Board's code"
       rules={[{ required: true, message: 'Please enter board code' },
-        { validator: validateMarks },
+        { validator: validate },
       ]}>
       <Input placeholder="Enter board code" 
       onChange={(e) => handleUppercase('class_12_board_code', e.target.value)}
@@ -504,7 +524,7 @@ function Students() {
                   { validator: validateMarks },
                 ]}
                 >
-                <Input placeholder="Enter marks" />
+                <Input placeholder="Enter marks"  maxLength={4} />
               </Form.Item>
             </Col>
             <Col span={8}>

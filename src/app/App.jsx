@@ -28,20 +28,20 @@ import Dashboard from '../pages/Dashboard';
 import Students from '../pages/Students';
 import Home from '../pages/home';
 import EditStudents from '../pages/EditStudent';
+import Payments from '../pages/Payments';
+import Front from '../pages/Front';
 
 function App() {
 
-  // / -> login pages
-  // /dashboard -> list of Students
-  // /student/add -> add student
-  // /student/edit/:id -> edit  student
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/" element={<Dashboard />}>
-        <Route index element={<Home />} /> 
+        <Route path="/students" element={<Home />} /> 
+        <Route index element={<Front />} /> 
         <Route path="/add-student" element={<Students />} /> 
         <Route path="/edit-student/:id" element={<EditStudents />} /> 
+        <Route path="/payment" element={<Payments />} /> 
       </Route>
     </Routes>
   );

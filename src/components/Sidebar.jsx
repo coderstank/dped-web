@@ -1,19 +1,25 @@
 import React, { useEffect, useState } from "react";
 
 import { Menu } from "antd";
-import { FileOutlined, DollarOutlined } from "@ant-design/icons";
+import { FileOutlined, DollarOutlined, CreditCardOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 
 const items=[
+    {
+      key: "1",
+      icon: <DollarOutlined />,
+      label: <Link to="/">Dashboard</Link>,
+  },
    { 
-        key:'1',
+        key:'2',
         icon:<FileOutlined />,
-        label:<Link to="/">Students</Link>,
+        label:<Link to="/students">Students</Link>,
    },
+  
    {
-        key: "2",
-        icon: <DollarOutlined />,
-        label: <Link to="add-student">Add Student</Link>,
+        key: "3",
+        icon:  <CreditCardOutlined  />,
+        label: <Link to="payment">Payment</Link>,
   },
    
 ]

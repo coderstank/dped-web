@@ -26,10 +26,11 @@ function Login() {
         <img className="logo-image" src="/images/biharlogo.png" alt="" />
 
         <div>
-          <h2 style={{ color: "red" }}>DPED EXAMINATION APPLICATION FORM</h2>
+          <h2 style={{ color: "red" }}>DPED EXAMINATION (SESSION 2025-27) </h2>
+          <h3 style={{ color: "red" ,textAlign:"center"}}>APPLICATION FORM</h3>
         </div>
         <div>
-          <p>Help Email-: dpedhelpdesk@gmail.com</p>
+          <p>Help Mobile-: +91 82102 68047</p>
         </div>
       </div>
 

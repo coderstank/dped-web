@@ -54,10 +54,12 @@ console.log(selectedStudents)
   };
 
   const [data,setData] = useState([])
-  const getAllRecords = async () => {
+  const [limit,setLimit]=useState(10)
+  const [page,setPage]=useState(1)
+  const getAllRecords = async (limit,page) => {
     try {
-       const { data } = await getAllCandidates();
-       setData(data)
+       const { data } = await getAllCandidates(limit,page);
+       setData(data.docs)
     } catch (error) {
       notification.error({ message: error.message || "something went wrong" });
     }
@@ -68,7 +70,7 @@ console.log(selectedStudents)
           values.candidates=selectedStudents
           const data = await Payment(values);
           notification.success('payment marked successful')
-          getAllRecords()
+          getAllRecords(limit,page)
           setSelectedStudents([])
           handleModalCancel()
           form.resetFields()
@@ -134,9 +136,9 @@ console.log(selectedStudents)
       render: (text, record) => (
         <>
         <Button type="primary"  onClick={() => navigate(`/edit-student/${record.id}`)}
-        disabled={record.application_state === "submitted"}
+        // disabled={record.application_state === "submitted"}
         >
-          Edit
+          view
         </Button>
         
        </>
@@ -147,8 +149,8 @@ console.log(selectedStudents)
 
 
   useEffect(()=>{
-    getAllRecords()
-  },[])
+    getAllRecords(limit,page)
+  },[limit,page])
 
   return (
     <div>

@@ -1,22 +1,74 @@
 import React, { useEffect, useState } from 'react';
 import {  Form,  Input,  Select,  DatePicker,  Button, Card, Row, Col, Upload, notification} from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import { DownloadOutlined, UploadOutlined } from '@ant-design/icons';
 import { useParams,useNavigate } from 'react-router-dom';
 const { Option } = Select;
 import { useDispatch, useSelector } from "react-redux";
 import { AddCandidate, getCandidatesById, updateCandidatesById } from '../api/auth';
 import { setLoading, setUser } from '../reducers/authSlice';
 import UploadFile from "../components/UploadFile";
+import { jsPDF } from 'jspdf';
+import html2canvas from "html2canvas";
 function EditStudents() {
     const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const {isLoading} = useSelector(state=>state.auth)
   const [form] = Form.useForm();
-
+const [formStatus,setFormStatus]=useState("submitted")
   const handleUppercase = (fieldName, value) => {
     form.setFieldsValue({ [fieldName]: value.toUpperCase() });
   };
+
+ const handleDownloadPDF = async () => {
+  try {
+    const formElement = document.getElementById("form-container");
+    const images = formElement.querySelectorAll("img");
+    const imagePromises = Array.from(images).map((img) => {
+      return new Promise((resolve) => {
+        if (img.complete) {
+          resolve();  
+        } else {
+          img.onload = resolve;  
+        }
+      });
+    });
+
+    await Promise.all(imagePromises);
+
+    const canvas = await html2canvas(formElement, {
+      scale: 2, 
+      logging: true, 
+    });
+
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF("p", "mm", "a4");
+
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+
+    const totalHeight = canvas.height * pdfWidth / canvas.width;
+    let yPosition = 0;
+    const imgHeight = pdfHeight;
+
+  
+    while (yPosition < totalHeight) {
+      pdf.addImage(imgData, "PNG", 0, yPosition, pdfWidth, imgHeight);
+      yPosition += imgHeight;
+
+     
+    }
+
+    pdf.save("form.pdf");
+  } catch (error) {
+    console.error("Error generating PDF:", error);
+  }
+};
+
+  
+
+
+
   const [nationality, setNationality] = useState("");
   const [disabled, setDisablity] = useState("");
   const [religion, setReligion] = useState("");
@@ -34,6 +86,19 @@ function EditStudents() {
     signature: [],
     photo: [],
   });
+  const validate = (_, value) => {
+    if (!value) {
+      return Promise.reject(new Error("Please enter marks"));
+    }
+    const regex = /^(?=.*[a-zA-Z])(?=.*\d).+$/;
+    if (!regex.test(value)) {
+      return Promise.reject(
+        new Error("Marks must contain both numbers and alphabets")
+      );
+    }
+    return Promise.resolve();
+  };
+
 
   const validateMarks = (_, value) => {
     if (!value || /^\d+(\.\d{1,2})?$/.test(value)) {
@@ -46,10 +111,10 @@ function EditStudents() {
     if (!value) {
       return Promise.reject(new Error("Percentage is required"));
     }
-    if (/^\d+(\.\d{1,2})?$/.test(value) && value >= 0 && value <= 100) {
+    if (/^\d+(\.\d{1,2})?$/.test(value) && value >= 33 && value <= 100) {
       return Promise.resolve();
     }
-    return Promise.reject(new Error("Enter a valid percentage (0-100 with up to 2 decimal places)"));
+    return Promise.reject(new Error("Enter a valid percentage (33-100 with up to 2 decimal places)"));
   };
   
   const validateYear = (_, value) => {
@@ -78,11 +143,10 @@ function EditStudents() {
 
       try {
         dispatch(setLoading(true))
-        delete values.email
-        delete values.identification_marks_2
+       
          const { data } = await updateCandidatesById(id,values);
          notification.success('Candidate updated successfully!')
-        navigate("/");
+        navigate("/students");
       } catch (error) {
         notification.error({ message: error.message || "something went wrong" });
       }
@@ -99,6 +163,7 @@ function EditStudents() {
           setDisablity(data.differently_abled)
           setNationality(data.nationality)
           setReligion(data.religion)
+          setFormStatus(data.application_state)
         } catch (error) {
           notification.error({
             message: "Error fetching candidate data",
@@ -116,9 +181,10 @@ function EditStudents() {
 
 
   return (
-    <div style={{ padding: '24px', border:"1px solid black",borderRadius:"5px" }}>
+    <div id="form-container" style={{ padding: '24px', border:"1px solid black",borderRadius:"5px" }}>
       <Card title="DPED Application Form">
         <Form
+        disabled={formStatus==="submitted"}
           form={form}
           layout="vertical"
           onFinish={onFinishLogin}
@@ -339,7 +405,9 @@ function EditStudents() {
                 name="identification_marks"
                 label="First Identification Mark"
                 rules={[{ required: true, message: 'Please enter the first identification mark' }]}>
-                <Input placeholder="Enter the first identification mark" />
+                <Input placeholder="Enter the first identification mark" 
+                 onChange={(e) => handleUppercase('identification_marks', e.target.value)}
+                />
               </Form.Item>
               
             </Col>
@@ -348,7 +416,9 @@ function EditStudents() {
                 name="identification_marks_2"
                 label="Second Identification Mark"
                 rules={[{ required: true, message: 'Please enter the second identification mark' }]}>
-                <Input placeholder="Enter the second identification mark" />
+                <Input placeholder="Enter the second identification mark"
+                 onChange={(e) => handleUppercase('identification_marks_2', e.target.value)}
+                />
               </Form.Item>
               
             </Col>
@@ -470,7 +540,7 @@ function EditStudents() {
       name="class_12_board_code"
       label="Class XII passing Board's code"
       rules={[{ required: true, message: 'Please enter board code' },
-        { validator: validateMarks },
+        { validator: validate },
       ]}>
       <Input placeholder="Enter board code" 
       onChange={(e) => handleUppercase('class_12_board_code', e.target.value)}
@@ -510,7 +580,7 @@ function EditStudents() {
                   { validator: validateMarks },
                 ]}
                 >
-                <Input placeholder="Enter marks" />
+                <Input placeholder="Enter marks" maxLength={4} />
               </Form.Item>
             </Col>
             <Col span={8}>
@@ -668,11 +738,32 @@ function EditStudents() {
      
     </Row>
           <Form.Item>
-            <Button
-            disabled={!isLoading}
-            style={{width:"100%",marginTop:"20px"}} type="primary" htmlType="submit">
-              Update
-            </Button>
+          <Col span={formStatus === "submitted" ? 12 : 8}>
+                  <Button
+                   disabled={!isLoading}
+                    icon={<DownloadOutlined />}
+                    style={{width:"100%", marginTop:"20px"}} 
+                    type="default" 
+                    onClick={handleDownloadPDF}
+                  >
+                    Download PDF
+                  </Button>
+                </Col>
+            {formStatus==="submitted"?
+          <Button
+          disabled={!isLoading}
+          style={{width:"100%",marginTop:"20px"}} onClick={()=>navigate("/students")} type="primary" htmlType="button">
+            Back
+          </Button>
+          
+          :
+          <Button
+          disabled={!isLoading}
+          style={{width:"100%",marginTop:"20px"}} type="primary" htmlType="submit">
+            Update
+          </Button>
+          }
+            
           </Form.Item>
         </Form>
       </Card>
