@@ -10,7 +10,7 @@ import UploadFile from "../components/UploadFile";
 import { jsPDF } from 'jspdf';
 import html2canvas from "html2canvas";
 
-import {useReactToPrint} from "react-to-print";
+// import {useReactToPrint} from "react-to-print";
 import { useRef } from "react";
 
 function EditStudents() {
@@ -24,53 +24,54 @@ function EditStudents() {
     form.setFieldsValue({ [fieldName]: value.toUpperCase() });
   };
 
-  const handleDownloadPDF = async () => {
-    try {
-      setLoading(true);
-  
-      const formElement = document.getElementById("form-container");
-      const images = formElement.querySelectorAll("img");
-      const imagePromises = Array.from(images).map((img) => {
-        return new Promise((resolve) => {
-          if (img.complete) {
-            resolve();
-          } else {
-            img.onload = resolve;
+  useEffect(() => {
+    const handlePrint = async () => {
+      if (window.matchMedia('print').matches) {
+        try {
+          const formElement = document.getElementById("form-container");
+          
+          // Remove buttons before generating PDF
+          const buttonsToRemove = formElement.querySelectorAll('.print-hide');
+          buttonsToRemove.forEach(button => button.style.display = 'none');
+
+          const canvas = await html2canvas(formElement, {
+            scale: 2,
+            logging: true,
+            backgroundColor: "#ffffff",
+          });
+
+          const imgData = canvas.toDataURL("image/png");
+          const pdf = new jsPDF("p", "mm", "a4");
+
+          const pdfWidth = pdf.internal.pageSize.getWidth();
+          const pdfHeight = pdf.internal.pageSize.getHeight();
+
+          const totalHeight = (canvas.height * pdfWidth) / canvas.width;
+          let yPosition = 0;
+
+          while (yPosition < totalHeight) {
+            pdf.addImage(imgData, "PNG", 0, yPosition, pdfWidth, pdfHeight);
+            yPosition += pdfHeight;
+            if (yPosition < totalHeight) {
+              pdf.addPage();
+            }
           }
-        });
-      });
-  
-      await Promise.all(imagePromises);
-  
-      const canvas = await html2canvas(formElement, {
-        scale: 2,
-        logging: true,
-        // Set background to white to avoid transparency issues
-        backgroundColor: "#ffffff",
-      });
-  
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "mm", "a4");
-  
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-  
-      const totalHeight = canvas.height * pdfWidth / canvas.width;
-      let yPosition = 0;
-  
-      while (yPosition < totalHeight) {
-        pdf.addImage(imgData, "PNG", 0, yPosition, pdfWidth, pdfHeight);
-        yPosition += pdfHeight;
+
+          pdf.save(`${id}_form.pdf`);
+        } catch (error) {
+          console.error("Error generating PDF:", error);
+        }
       }
-  
-      pdf.save(`${id}_form.pdf`);
-    } catch (error) {
-      console.error("Error generating PDF:", error);
-      notification.error({ message: "Error While generating pdf", description: error.message });
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+
+    // Add print event listener
+    window.addEventListener('afterprint', handlePrint);
+
+    // Cleanup listener
+    return () => {
+      window.removeEventListener('afterprint', handlePrint);
+    };
+  }, [id]);
   
 
   const [nationality, setNationality] = useState("");
@@ -747,19 +748,22 @@ function EditStudents() {
             {formStatus === "submitted" ?
               <>
                 <Button
-                  style={{ width: "100%", marginTop: "20px" }} onClick={() => navigate("/students")} type="primary" htmlType="button">
+                className="print-hide"
+                  style={{ width: "100%", marginTop: "20px" }}  onClick={() => navigate("/students")} type="primary" htmlType="button">
                   Back
                 </Button>
                 <Button
+                className="print-hide"
                   disabled={loading}
                   icon={<DownloadOutlined />}
                   style={{ width: "100%", marginTop: "20px" }}
                   type="default"
-                  onClick={handleDownloadPDF}
+                  // onClick={handleDownloadPDF}
+                  onClick={() => window.print()}
                   // onClick={()=>reactToPrintFn()}
                 >
                   {loading ? 'Loading' :
-                    'Download PDF'
+                    'Print'
                   }
                 </Button>
               </>

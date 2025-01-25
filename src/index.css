@@ -31,3 +31,21 @@ body::-webkit-scrollbar {
   color: white;
   background-color: #001529;
 }
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  
+  #form-container, 
+  #form-container * {
+    visibility: visible;
+  }
+  
+  #form-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}
