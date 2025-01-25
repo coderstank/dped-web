@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Image } from 'antd';
+import { Table, Image, Pagination } from 'antd';
 import moment from 'moment';
 import { getAllPayments } from '../api/auth';
 
 function Payments() {
 
     const [data,setData] = useState([])
-    const [limit,setLimit]=useState(10)
+    const [limit,setLimit]=useState(50)
     const [page,setPage]=useState(1)
+      const [pageDetails,setPageDetails]=useState({})
     const getAllRecords = async (limit,page) => {
       try {
          const { data } = await getAllPayments(limit,page);
+         setPageDetails({...data,docs:[]})
          setData(data.docs)
       } catch (error) {
         notification.error({ message: error.message || "something went wrong" });
@@ -47,7 +49,14 @@ function Payments() {
   return (
     <div>
         <h2>Payments</h2>
-      <Table dataSource={data} columns={columns} />
+      <Table dataSource={data} columns={columns} pagination={false} />
+      <Pagination
+      align="center"
+      style={{marginTop:30}}
+      total={pageDetails?.totalDocs}
+      pageSize={pageDetails?.limit}
+      onChange={page=>setPage(page)}
+      />
     </div>
   );
 }

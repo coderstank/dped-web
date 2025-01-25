@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from '../components/Sidebar';
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { Layout, Button, theme } from "antd";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import Navbar from "../components/Navbar";
-import Home from "./home";
-import Students from "./Students";
+import Home from "./Students";
+import Students from "./AddStudent";
+import { useSelector } from "react-redux";
 
 const { Header, Sider, Content } = Layout;
 function Dashboard() {
@@ -13,6 +14,14 @@ function Dashboard() {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
+  const {isAuthenticated} = useSelector(state=>state.auth)
+  const navigation = useNavigate()
+
+  useEffect(()=>{
+      if (!isAuthenticated) {
+        navigation('/login')
+      }
+  },[])
 
   return (
     <Layout style={{minHeight:"100vh"}}>
@@ -73,8 +82,6 @@ function Dashboard() {
         >
           
           <Outlet />
-          {/* <Home/> */}
-          {/* <Students/> */}
         </Content>
       </Layout>
     </Layout>

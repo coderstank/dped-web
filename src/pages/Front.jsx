@@ -7,7 +7,7 @@ export default function Front() {
   return (
     <div style={{ padding: '0px' }}>
       {/* Dashboard Cards */}
-      <Row gutter={16} style={{ marginBottom: '30px' }}>
+      {/* <Row gutter={16} style={{ marginBottom: '30px' }}>
         <Col span={8}>
           <Card
             title={<Text style={{ fontSize: '24px', fontWeight: 'bold', color: '#212529' }}>16</Text>}
@@ -45,7 +45,7 @@ export default function Front() {
             </Button>
           </Card>
         </Col>
-      </Row>
+      </Row> */}
 
      
       <Card

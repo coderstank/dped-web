@@ -26,10 +26,10 @@ import { Routes, Route } from 'react-router-dom';
 import Login from '../pages/Login';
 import Dashboard from '../pages/Dashboard';
 import Students from '../pages/Students';
-import Home from '../pages/home';
 import EditStudents from '../pages/EditStudent';
 import Payments from '../pages/Payments';
 import Front from '../pages/Front';
+import AddStudent from '../pages/AddStudent';
 
 function App() {
 
@@ -37,9 +37,9 @@ function App() {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/" element={<Dashboard />}>
-        <Route path="/students" element={<Home />} /> 
+        <Route path="/students" element={<Students />} /> 
         <Route index element={<Front />} /> 
-        <Route path="/add-student" element={<Students />} /> 
+        <Route path="/add-student" element={<AddStudent />} /> 
         <Route path="/edit-student/:id" element={<EditStudents />} /> 
         <Route path="/payment" element={<Payments />} /> 
       </Route>

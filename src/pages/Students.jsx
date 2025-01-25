@@ -1,693 +1,270 @@
-import React, { useEffect, useState } from 'react';
-import {  Form,  Input,  Select,  DatePicker,  Button, Card, Row, Col, Upload, notification} from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
-import { useParams,useNavigate } from 'react-router-dom';
-const { Option } = Select;
-import { useDispatch } from "react-redux";
-import { AddCandidate } from '../api/auth';
-import { setUser } from '../reducers/authSlice';
+import React, { useEffect, useState } from "react";
+import { Select, Button, Row, Col, Form, Table, Checkbox, notification, Tag, Modal, Input, Space, Pagination } from "antd";
+import { DROPDOWNS } from "../utills/common";
+import moment from "moment";
+import { useNavigate } from "react-router-dom";
+import { getAllCandidates, Payment } from "../api/auth";
 import UploadFile from "../components/UploadFile";
+import Title from "antd/es/typography/Title";
+
 function Students() {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const [form] = Form.useForm();
-
-  const handleUppercase = (fieldName, value) => {
-    form.setFieldsValue({ [fieldName]: value.toUpperCase() });
-  };
-  const [nationality, setNationality] = useState("");
-  const [disabled, setDisablity] = useState("");
-  const [religion, setReligion] = useState("");
-
-  const handleNationalityChange = (value) => {
-    setNationality(value);
-  };
-  const handleDisabledChange = (value) => {
-    setDisablity(value);
-  };
-  const handleReligionChange = (value) => {
-    setReligion(value);
-  };
-  const [fileList, setFileList] = useState({
-    signature: [],
-    photo: [],
-  });
-
-
-  const validate = (_, value) => {
-    if (!value) {
-      return Promise.reject(new Error("Please enter marks"));
-    }
-    const regex = /^(?=.*[a-zA-Z])(?=.*\d).+$/;
-    if (!regex.test(value)) {
-      return Promise.reject(
-        new Error("Marks must contain both numbers and alphabets")
-      );
-    }
-    return Promise.resolve();
-  };
-
-  const validateMarks = (_, value) => {
-    if (!value || /^\d+(\.\d{1,2})?$/.test(value)) {
-      return Promise.resolve();
-    }
-    return Promise.reject(new Error("Numeric values only"));
-  };
-
-  const validatePercentage = (_, value) => {
-    if (!value) {
-      return Promise.reject(new Error("Percentage is required"));
-    }
-    if (/^\d+(\.\d{1,2})?$/.test(value) && value >= 33 && value <= 100) {
-      return Promise.resolve();
-    }
-    return Promise.reject(new Error("Enter a valid percentage (33-100 with up to 2 decimal places)"));
-  };
-  
-  const validateYear = (_, value) => {
-    const currentYear = new Date().getFullYear();
-    if (!value) {
-      return Promise.reject(new Error("Passing year is required"));
-    }
-    if (/^\d{4}$/.test(value) && value >= 1900 && value <= currentYear) {
-      return Promise.resolve();
-    }
-    return Promise.reject(new Error("Enter a valid 4-digit year between 1900 and the current year"));
-  };
-  
-  const validateHindiName = (_, value) => {
-    if (!value) {
-      return Promise.reject(new Error("Student's name in Hindi is required"));
-    }
-    if (/^[\u0900-\u097F\s]+$/.test(value)) {
-      return Promise.resolve();
-    }
-    return Promise.reject(new Error("Only Hindi characters are allowed"));
-  };
-
-
-    const onFinishLogin = async (values) => {
-      try {
-      
-         const { data } = await AddCandidate(values);
-         notification.success('Student record is saved')
-        navigate("/students");
-      } catch (error) {
-        notification.error({ message: error.message || "something went wrong" });
-      }
-    };
-
-  const handleBeforeUpload = (file) => {
-    const isValidSize = file.size / 1024 / 1024 < 1; 
-    if (!isValidSize) {
-      alert('File must be smaller than 1MB');
-    }
-    return isValidSize;
-  };
-  
+ const [form] = Form.useForm();
+  const [students, setStudents] = useState([]);
+  const [selectedStudents, setSelectedStudents] = useState([]);
+  const [isAllSelected, setIsAllSelected] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedIds, setSelectedIds] = useState([]); 
+  const [paymentAmount, setPaymentAmount] = useState("");
  
-  const handleChange = (info, fieldName) => {
-    let updatedFileList = [...info.fileList];
-    updatedFileList = updatedFileList.slice(-1); 
-    setFileList((prev) => ({
-      ...prev,
-      [fieldName]: updatedFileList,
-    }));
+
+  const handlePayClick = () => {
+    setSelectedIds(selectedStudents);
+    setIsModalVisible(true); 
   };
 
-  
- 
-  const normFile = (e, fieldName) => {
-    if (Array.isArray(e)) {
-      return e;
+  const handleModalCancel = () => {
+    setIsModalVisible(false); 
+  };
+
+  const handleSelectChange = (id) => {
+    setSelectedStudents((prevSelected) =>
+      prevSelected.includes(id)
+        ? prevSelected.filter((studentId) => studentId !== id)
+        : [...prevSelected, id]
+    );
+
+
+  };
+
+
+  const [data,setData] = useState([])
+  const [limit,setLimit]=useState(50)
+  const [page,setPage]=useState(1)
+  const [pageDetails,setPageDetails]=useState({})
+  const getAllRecords = async (limit,page) => {
+    try {
+       const { data } = await getAllCandidates(limit,page);
+       setData(data.docs)
+       setPageDetails({...data,docs:[]})
+    } catch (error) {
+      notification.error({ message: error.message || "something went wrong" });
     }
-    return e && e.fileList;
-  };
+  }
 
+  const onFinishPayment = async (values) => {
+        try {
+          values.candidates=selectedStudents
+          const data = await Payment(values);
+          notification.success({message:'payment marked successful'})
+          getAllRecords(limit,page)
+          setSelectedStudents([])
+          handleModalCancel()
+          form.resetFields()
+        } catch (error) {
+          notification.error({ message: error.message || "something went wrong" });
+        }
+      };
+
+  const columns = [
+    {
+      title: "Select",
+      key: "select",
+      render: (text, record) => (
+        <Checkbox
+          checked={selectedStudents.includes(record.id)}
+          onChange={() => handleSelectChange(record.id)}
+          disabled={record.application_state === "submitted"}
+        />
+      ),
+    },
+    {
+      title: "Student Name",
+      dataIndex: "name",
+      key: "student Name",
+    },
+    {
+      title: "Father Name",
+      dataIndex: "father_name",
+      key: "father name ",
+    },
+    {
+      title: "Created At",
+      render: (text, {created_at}) => (
+        <span>{moment(created_at).format("DD-MM-YYYY")}</span>
+      ),
+    },
+    {
+      title: "Status",
+      key: "application_state",
+      render: (text, record) => (
+        <span>
+          {record.application_state == "saved" ? (
+           <Tag color="yellow" title="Pending">Pending</Tag>
+          ) : (
+            <Tag color="green" title="Submitted">Submitted</Tag>
+          )}
+        </span>
+      ),
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (text, record) => (
+        <>
+        <Button type="primary"  onClick={() => navigate(`/edit-student/${record.id}`)}
+        >
+          view
+        </Button>
+        
+       </>
+      ),
+    },
+  ];
+
+
+
+  useEffect(()=>{
+    getAllRecords(limit,page)
+  },[limit,page])
 
   return (
-    <div style={{ padding: '24px', border:"1px solid black",borderRadius:"5px" }}>
-      <Card title="DPED Application Form">
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={onFinishLogin}
-          autoComplete="off"
-        >
-
-          <h3>Personal Information</h3>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="name"
-                label="Student's Name (In English)"
-                rules={[{ required: true, message: 'Please enter student name in English' },
-                  {
-                    pattern: /^[A-Za-z\s]*$/,
-                    message: "Only alphabets and spaces are allowed", 
-                  }
-                ]}>
-                <Input placeholder="Enter name in English" 
-                onChange={(e) => handleUppercase('name', e.target.value)}
-                />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="name_in_hindi"
-                label="Student's Name in Hindi"
-                rules={[{ required: true, message: 'Please enter student name in Hindi' },
-                  { validator: validateHindiName },
-                ]}>
-                <Input placeholder="Enter name in Hindi" 
-                
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="mother_name"
-                label="Mother's Name (In English)"
-                rules={[{ required: true, message: 'Please enter mother name in English' },
-                  {
-                    pattern: /^[A-Za-z\s]*$/,
-                    message: "Only alphabets and spaces are allowed", 
-                  }
-                ]}>
-                <Input placeholder="Enter mother's name in English" 
-                onChange={(e) => handleUppercase('mother_name', e.target.value)}
-                />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="mother_name_in_hindi"
-                label="Mother's Name in Hindi"
-                rules={[{ required: true, message: 'Please enter mother name in Hindi' },
-                  { validator: validateHindiName },
-                ]}>
-                <Input placeholder="Enter mother's name in Hindi" />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="father_name"
-                label="Father's Name (In English)"
-                rules={[{ required: true, message: 'Please enter father name in English' },
-                  {
-                    pattern: /^[A-Za-z\s]*$/,
-                    message: "Only alphabets and spaces are allowed", 
-                  }
-                ]}>
-                <Input placeholder="Enter father's name in English" 
-                onChange={(e) => handleUppercase('father_name', e.target.value)}
-                />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="father_name_in_hindi"
-                label="Father's Name in Hindi"
-                rules={[{ required: true, message: 'Please enter father name in Hindi' },
-                  { validator: validateHindiName },
-                ]}>
-                <Input placeholder="Enter father's name in Hindi" />
-              </Form.Item>
-            </Col>
-          </Row>
-        
-
-          <Row gutter={16}>
-          <Col span={12}>
-              <Form.Item
-                name="mobile_number"
-                label="Mobile"
-                rules={[{ required: true, message: 'Please enter mobile number' }, { pattern: /^[0-9]{10}$/, message: 'Please enter a valid 10-digit mobile number' }]}>
-                <Input placeholder="Enter mobile number" maxLength={10} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="email"
-                label="E-mail Id"
-                rules={[{ required: true, message: 'Please enter email' }, { type: 'email', message: 'Please enter a valid email' }]}>
-                <Input placeholder="Enter email address"
-                onChange={(e) => handleUppercase('email', e.target.value)}
-                />
-              </Form.Item>
-            </Col>
-            
-          </Row>
-          <Row gutter={16}>
-          <Col span={24}>
-              <Form.Item
-                name="address"
-                label="Address"
-                rules={[{ required: true, message: 'Please enter address' }]}>
-                <Input.TextArea placeholder="Enter your address" />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-          <Col span={8}>
-              <Form.Item
-                name="pincode"
-                label="Pincode"
-                rules={[{ required: true, message: 'Please enter pincode number' }, { pattern: /^[0-9]{6}$/, message: 'Please enter a valid 6-digit pincode number' }]}>
-                <Input placeholder="Enter pin number" maxLength={6} />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item
-                name="dob"
-                label="Date of Birth"
-                rules={[{ required: true, message: 'Please select date of birth' }]}>
-                <Input type='date' style={{ width: '100%' }} placeholder="DD/MM/YYYY" format="DD/MM/YYYY" />
-              </Form.Item>
-            </Col>
-           
-            <Col span={8}>
-              <Form.Item
-                name="aadhar_no"
-                label="Aadhar"
-                rules={[{ required: true, message: 'Please enter aadhar number' },
-                  { pattern: /^[0-9]{12}$/, message: 'Please enter a valid 12-digit aadhar number' }
-
-                ]}>
-                <Input placeholder="Enter your aadhar number" maxLength={12}/>
-              </Form.Item>
-            </Col>
-            
-
-          </Row>
-          
-          <h3>Additional Information</h3>
-          <Row gutter={16}>
-            <Col span={8}>
-              <Form.Item
-                name="gender"
-                label="Gender"
-                rules={[{ required: true, message: 'Please select gender' }]}>
-                <Select style={{textTransform:'uppercase'}} placeholder="Select gender">
-                  <Option value="MALE">MALE</Option>
-                  <Option value="FEMALE">FEMALE</Option>
-                  <Option value="TRANSGENDER">TRANSGENDER</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item
-                name="category"
-                label="Caste Category"
-                rules={[{ required: true, message: 'Please select category' }]}>
-                <Select style={{textTransform:'uppercase'}} placeholder="Select category">
-                  <Option value="GENERAL">GENERAL</Option>
-                  <Option value="SC">SC</Option>
-                  <Option value="ST">ST</Option>
-                  <Option value="EBC">EBC</Option>
-                  <Option value="BC">BC</Option>
-                  <Option value="EWS">EWS</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item
-                name="nationality"
-                label="Nationality"
-                rules={[{ required: true, message: 'Please select nationality' }]}>
-                <Select style={{textTransform:'uppercase'}} placeholder="Select nationality"
-                value={nationality}
-                onChange={handleNationalityChange}
-                >
-                  <Option value="INDIAN">INDIAN</Option>
-                  <Option value="OTHERS">OTHERS</Option>
-                </Select>
-              </Form.Item>
-              {nationality === "OTHERS" && (
-                <Form.Item
-                  name="nationality_others"
-                  label="Specify Nationality"
-                  rules={[{ required: true, message: "Please specify nationality" }]}
-                >
-                  <Input placeholder="Enter nationality" 
-                   onChange={(e) => handleUppercase('nationality_others', e.target.value)}
-                  />
-                </Form.Item>
-              )}
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={8}>
-              <Form.Item
-                name="identification_marks"
-                label="First Identification Mark"
-                rules={[{ required: true, message: 'Please enter the first identification mark' }]}>
-                <Input placeholder="Enter the first identification mark"
-                
-                onChange={(e) => handleUppercase('identification_marks', e.target.value)}/>
-              </Form.Item>
-              
-            </Col>
-            <Col span={8}>
-            <Form.Item
-                name="identification_marks_2"
-                label="Second Identification Mark"
-                rules={[{ required: true, message: 'Please enter the second identification mark' }]}>
-                <Input placeholder="Enter the second identification mark" 
-                 onChange={(e) => handleUppercase('identification_marks_2', e.target.value)}
-                />
-              </Form.Item>
-              
-            </Col>
-
-            <Col span={8}>
-              <Form.Item
-                name="exam_medium"
-                label="Medium"
-                rules={[{ required: true, message: 'Please select ' }]}>
-                <Select style={{textTransform:'uppercase'}} placeholder="Select Medium " >
-                  <Option value="HINDI">HINDI</Option>
-                  <Option value="ENGLISH">ENGLISH</Option>
-                 
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            
-            <Col span={8}>
-              <Form.Item
-                name="differently_abled"
-                label="Differently Abled"
-                rules={[{ required: true, message: 'Please select ' }]}>
-                <Select style={{textTransform:'uppercase'}} placeholder="Please select" 
-                value={nationality}
-                onChange={handleDisabledChange}
-                >
-                  <Option value="YES">YES</Option>
-                  <Option value="NO">NO</Option>
-                </Select>
-              </Form.Item>
-              {disabled === "YES" && (
-                <Form.Item
-                  name="differently_abled_others"
-                  label="Specify Disability"
-                  rules={[{ required: true, message: "Please specify Disability" }]}
-                >
-                  <Input placeholder="Enter Disability" 
-                   onChange={(e) => handleUppercase('differently_abled_others', e.target.value)}
-                  />
-                </Form.Item>
-              )}
-            </Col>
-            <Col span={8}>
-              <Form.Item
-                name="marital_status"
-                label="Marital Status"
-                rules={[{ required: true, message: 'Please select' }]}>
-                <Select style={{textTransform:'uppercase'}} placeholder="Select marital status">
-                  <Option value="MARRID">MARRID</Option>
-                  <Option value="UNMARRIED">UNMARRIED</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item
-                name="area"
-                label="Area"
-                rules={[{ required: true, message: 'Please select area' }]}>
-                <Select style={{textTransform:'uppercase'}} placeholder="Select area">
-                  <Option value="RURAL">RURAL</Option>
-                  <Option value="URBAN">URBAN</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-          <Col span={8}>
-              <Form.Item
-                name="religion"
-                label="Religion"
-                rules={[{ required: true, message: 'Please select religion' }]}>
-                <Select style={{textTransform:'uppercase'}} placeholder="Select religion"
-                value={religion}
-                onChange={handleReligionChange}
-                >
-                  <Option value="HINDUISM">HINDUISM</Option>
-                  <Option value="ISLAM">ISLAM</Option>
-                  <Option value="SIKHISM">SIKHISM</Option>
-                  <Option value="CHRISTIAN">CHRISTIAN</Option>
-                  <Option value="JAINISM">JAINISM</Option>
-                  <Option value="OTHERS">OTHERS</Option>
-                </Select>
-              </Form.Item>
-              {religion === "OTHERS" && (
-                <Form.Item
-                  name="religion_others"
-                  label="Specify Religion"
-                  rules={[{ required: true, message: "Please specify Religion" }]}
-                >
-                  <Input placeholder="Enter Religion" 
-                   onChange={(e) => handleUppercase('religion_others', e.target.value)}
-                  />
-                </Form.Item>
-              )}
-            </Col>
-          </Row>
-
-          <h3>Educational Information</h3>
-          <Row gutter={16}>
-
-<Col span={8}>
-    <Form.Item
-      name="class_12_board_name"
-      label="Class XII passing Board's Name"
-      rules={[{ required: true, message: 'Please enter board name' },
-        {
-          pattern: /^[A-Za-z\s]*$/,
-          message: "Only alphabets allowed", 
-        }
-      ]}>
-      <Input placeholder="Enter board name" 
-      onChange={(e) => handleUppercase('class_12_board_name', e.target.value)}
-      />
-    </Form.Item>
-  </Col>
-  <Col span={8}>
-    <Form.Item
-      name="class_12_board_code"
-      label="Class XII passing Board's code"
-      rules={[{ required: true, message: 'Please enter board code' },
-        { validator: validate },
-      ]}>
-      <Input placeholder="Enter board code" 
-      onChange={(e) => handleUppercase('class_12_board_code', e.target.value)}
-      />
-    </Form.Item>
-  </Col>
-  <Col span={8}>
-    <Form.Item
-      name="roll_no"
-      label="Roll Number"
-      rules={[{ required: true, message: 'Please enter roll number' },
-        { validator: validateMarks },
-      ]}>
-      <Input placeholder="Enter roll number" />
-    </Form.Item>
-  </Col>
-  
-</Row>
-          <Row gutter={16}>
-            <Col span={8}>
-              <Form.Item
-                name="passing_year"
-                label="Passing Year"
-                rules={[
-                  { required: true, message: "Please enter passing year" },
-                  { validator: validateYear },
-                ]}>
-                <Input placeholder="Enter year" />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item
-                name="marks_obtained"
-                label="Marks Obtained"
-                rules={[
-                  { required: true, message: "Please enter marks" },
-                  { validator: validateMarks },
-                ]}
-                >
-                <Input placeholder="Enter marks"  maxLength={4} />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item
-                name="percentage_of_marks"
-                label="% of Marks"
-                rules={[
-                  { required: true, message: "Please enter percentage" },
-                  { validator: validatePercentage },
-                ]}>
-                <Input placeholder="Enter percentage" />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          
-
-         
-          <Row gutter={16}>
-
-          <Col span={12}>
-                    <div>
-                      <p
-                        style={{
-                          color: "black",
-                          margin: "12px 0",
-                        }}
-                      >
-                        Upload Signature with White Background (Signature Size
-                        10 KB to 50 KB) only .jpg
-                      </p>
-                      <div style={{ display: "flex", gap: "16px" }}>
-                        <Form.Item
-                          name={"sign"}
-                          label={"Student Signature"}
-                          // rules={[requiredRule("sign")]}
-                        >
-                          <UploadFile
-                            setFile={(e) => {
-                              form.setFieldValue(["sign"], e);
-                              form.validateFields(["sign"]);
-                            }}
-                            showFile={false}
-                            type={"sign"}
-                            meta={{
-                              fileTypes: [
-                                "image/png",
-                                "image/jpg",
-                                "image/jpeg",
-                              ],
-                              // height: 2,
-                              // width: 4,
-                              maxSize: 50,
-                              minSize: 10,
-                            }}
-                            id={new Date().getDate().toString()}
-                            file={form.getFieldValue(["sign"])}
-                          />
-                          <Form.Item
-                            noStyle
-                            shouldUpdate={(prev, curr) =>
-                              prev.sign !== curr.sign
-                            }
-                          >
-                            {() => {
-                              return (
-                                <div style={{ margin: "16px 0" }}>
-                                  <img
-                                    src={`${form.getFieldValue([
-                                      "sign",
-                                    ])}?${performance.now()}`}
-                                    alt="signature"
-                                    style={{
-                                      height: "150px",
-                                      width: "150px",
-                                      border: "1px solid black",
-                                      objectFit: "contain",
-                                    }}
-                                  />
-                                </div>
-                              );
-                            }}
-                          </Form.Item>
-                        </Form.Item>
-                      </div>
-                    </div>
-                  </Col>
-                  <Col span={12}>
-                    <div>
-                      <p
-                        style={{
-                          color: "black",
-                          margin: "12px 0",
-                        }}
-                      >
-                        Upload Signature with White Background (Signature Size
-                        10 KB to 50 KB) only .jpg
-                      </p>
-                      <div style={{ display: "flex", gap: "16px" }}>
-                        <Form.Item
-                          name={"photo"}
-                          label={"Student Photo"}
-                          // rules={[requiredRule("sign")]}
-                        >
-                          <UploadFile
-                            setFile={(e) => {
-                              form.setFieldValue(["photo"], e);
-                              form.validateFields(["photo"]);
-                            }}
-                            showFile={false}
-                            type={"photo"}
-                            meta={{
-                              fileTypes: [
-                                "image/png",
-                                "image/jpg",
-                                "image/jpeg",
-                              ],
-                              // height: 2,
-                              // width: 4,
-                              maxSize: 50,
-                              minSize: 10,
-                            }}
-                            id={new Date().getDate().toString()}
-                            file={form.getFieldValue(["photo"])}
-                          />
-                          <Form.Item
-                            noStyle
-                            shouldUpdate={(prev, curr) =>
-                              prev.sign !== curr.sign
-                            }
-                          >
-                            {() => {
-                              return (
-                                <div style={{ margin: "16px 0" }}>
-                                  <img
-                                    src={`${form.getFieldValue([
-                                      "photo",
-                                    ])}?${performance.now()}`}
-                                    alt="phpto"
-                                    style={{
-                                      height: "150px",
-                                      width: "150px",
-                                      border: "1px solid black",
-                                      objectFit: "contain",
-                                    }}
-                                  />
-                                </div>
-                              );
-                            }}
-                          </Form.Item>
-                        </Form.Item>
-                      </div>
-                    </div>
-                  </Col>
-     
-    </Row>
-          <Form.Item>
-            <Button style={{width:"100%",marginTop:"20px"}} type="primary" htmlType="submit">
-              Submit
+    <div>
+      <Form >
+        <Row gutter={16} style={{ display: "flex" , alignItems:'center',marginBottom:20 }}>
+        <Col span={12}>
+          <Title level={3}>Students</Title>
+        </Col>
+        <Col  span={12} style={{ textAlign: "right" }}>
+          <Space>
+            <Button onClick={() => navigate("/add-student")} type="primary">
+              Add Student
             </Button>
-          </Form.Item>
-        </Form>
-      </Card>
+            <Button disabled={!selectedStudents.length>0} onClick={handlePayClick} type="default">
+              Pay Now ({selectedStudents.length})
+            </Button>
+          </Space>
+        </Col>
+        </Row>
+      </Form>
+
+      <Table
+        dataSource={data}
+        columns={columns}
+        pagination={false}
+      />
+      <Pagination
+      align="center"
+      style={{marginTop:30}}
+      total={pageDetails?.totalDocs}
+      pageSize={pageDetails?.limit}
+      onChange={page=>setPage(page)}
+      />
+
+      <Modal
+      title="Payment Confirmation"
+      onCancel={handleModalCancel}
+      visible={isModalVisible}
+      footer={null} 
+      >
+      <div span={12}>
+        <div>
+          <p
+            style={{
+              color: "black",
+              margin: "12px 0",
+            }}
+          >
+            Upload Signature with White Background (Signature Size 10 KB to 50 KB) only .jpg
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          <Form
+              form={form}
+              onFinish={onFinishPayment}
+            >
+            {/* <Form.Item
+              name={"candidates"}
+              label={"Candidates"}
+              rules={[{ required: true, message: "Please select candidates" }]}
+            >
+              <Select
+                mode="multiple"
+                placeholder="Select candidates"
+                options={data.map((student) => ({
+                  label: student.name,
+                  value: student.id,
+                }))}
+                
+              />
+            </Form.Item> */}
+
+            <Form.Item
+              name={"payment_amount"}
+              label={"Payment Amount"}
+              rules={[{ required: true, message: "Please enter the payment amount" }]}
+            >
+              <Input
+                type="number"
+                placeholder="Enter payment amount"
+                
+              />
+            </Form.Item>
+            <Form.Item
+              name={"payment_file"}
+              label={"Payment Receipt"}
+              rules={[{ required: true, message: "Please upload the payment receipt" }]}
+            >
+              <UploadFile
+                setFile={(e) => {
+                  form.setFieldValue(["payment_file"], e);
+                  form.validateFields(["payment_file"]);
+                }}
+                showFile={false}
+                type={"payment_file"}
+                meta={{
+                  fileTypes: ["image/png", "image/jpg", "image/jpeg"],
+                  maxSize: 50,
+                  minSize: 10,
+                }}
+                id={new Date().getDate().toString()}
+                file={form.getFieldValue(["payment_file"])}
+              />
+              <Form.Item
+                noStyle
+                shouldUpdate={(prev, curr) => prev.payment_file !== curr.payment_file}
+              >
+                {() => {
+                  const fileUrl = form.getFieldValue(["payment_file"]);
+                  return (
+                    fileUrl && (
+                      <div style={{ margin: "16px 0" }}>
+                        <img
+                          src={`${fileUrl}?${performance.now()}`}
+                          alt="payment receipt"
+                          style={{
+                            height: "150px",
+                            width: "150px",
+                            border: "1px solid black",
+                            objectFit: "contain",
+                          }}
+                        />
+                      </div>
+                    )
+                  );
+                }}
+              </Form.Item>
+            </Form.Item>
+            <Form.Item>
+                <Button type="primary" htmlType="submit">
+                  Submit
+                </Button>
+              </Form.Item>
+            </Form>
+          </div>
+        </div>
+      </div>
+      </Modal>;
+
     </div>
   );
 }
