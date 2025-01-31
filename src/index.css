@@ -37,6 +37,7 @@ body::-webkit-scrollbar {
     visibility: hidden;
   }
   
+  
   #form-container, 
   #form-container * {
     visibility: visible;
