@@ -105,7 +105,7 @@ function AddStudent() {
 
   return (
     <div style={{ padding: '24px', border:"1px solid black",borderRadius:"5px" }}>
-      <Card title="DPED Application Form">
+      <Card  title={<div style={{ textAlign: 'center' }}>DPED APPLICATION FORM</div>}>
         <Form
           form={form}
           layout="vertical"
@@ -205,7 +205,7 @@ function AddStudent() {
           <Col span={12}>
               <Form.Item
                 name="mobile_number"
-                label="Mobile"
+                label="Mobile no of student"
                 rules={[{ required: true, message: 'Please enter mobile number' }, { pattern: /^[0-9]{10}$/, message: 'Please enter a valid 10-digit mobile number' }]}>
                 <Input placeholder="Enter mobile number" maxLength={10} />
               </Form.Item>
@@ -463,7 +463,7 @@ function AddStudent() {
   <Col span={8}>
     <Form.Item
       name="class_12_board_code"
-      label="Class XII passing Board's code"
+      label="Class XII passing Board's roll code"
       rules={[{ required: true, message: 'Please enter board code' },
         { validator: validate },
       ]}>

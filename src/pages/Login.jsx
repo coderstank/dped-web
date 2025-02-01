@@ -1,16 +1,33 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import "../css/pages/login.css";
 import { Form, Input, Button, notification } from 'antd';
-import { loginUser } from "../api/auth";
+import { getNotificationList, loginUser } from "../api/auth";
 import { login, setUser } from "../reducers/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 function Login() {
   const [loginState, setLoginState] = useState("login");
+  const [notificationList, setNotificationList] = useState([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false)
   const { isAuthenticated, isLoading } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    const fetchNotification = async () => {
+      try {
+        const { data } = await getNotificationList();
+        setNotificationList(data);
+      } catch (error) {
+        notification.error({
+          message: error.message || "something went wrong",
+        });
+      }
+    };
+    fetchNotification();
+  }, []);
+
+
   const onFinishLogin = async (values) => {
     try {
       setLoading(true)
@@ -44,6 +61,49 @@ function Login() {
 
       <div className="login-content">
         <div className="form-container">
+        <div className="information">
+            {" "}
+            <h2> Important Links</h2>
+            <ol>
+                {notificationList.map((file) => (
+                  <li style={{ padding: "12px" }}>
+                    <a
+                      style={{ textTransform: "uppercase" }}
+                      href={`${import.meta.env.VITE_FILE_URL}/files/others/${
+                        file.filename
+                      }`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {file.label}
+                    </a>
+                    {file.is_new && (
+                      <span>
+                        <img src="/images/New.gif" alt="" />
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ol>
+            <p
+              style={{
+                color: "red",
+                width: "400px",
+                fontWeight: "bold",
+                textAlign: "justify",
+              }}
+            >
+              नोट:- पेमेंट कटने के बाद अगर आपका आवेदन सबमिट नहीं होता है तो
+              कृपया १२ से २४ घंटे का इंतज़ार करें और Acknowledgment Section में
+              Verify Payment के बटन पर क्लिक अवश्य करें। इसके बाद भी सबमिट न
+              होने पर दिए गए email (ईमेल) पर ०१ ही request भेजें । अपने
+              email (ईमेल) में अपना रजिस्टर्ड मोबाइल नंबर एवं जिस नंबर से
+              पेमेंट किया गया है अनिवार्य रूप से अंकित करें। ०१ email (ईमेल) भेजने के उपरांत उसके जवाब के लिए १२ से २४ घंटे का इन्तजार
+              करें।
+            </p>
+          </div>
+
+
           <div className="form-content">
             <div className="content">
               {loginState === "login" && (

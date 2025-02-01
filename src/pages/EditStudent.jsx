@@ -24,119 +24,7 @@ function EditStudents() {
     form.setFieldsValue({ [fieldName]: value.toUpperCase() });
   };
 
-  // const handleDownloadPDF = async () => {
-  //   try {
-  //     setLoading(true);
-  
-  //     const formElement = document.getElementById("form-container");
-  //     const images = formElement.querySelectorAll("img");
-  //     const imagePromises = Array.from(images).map((img) => {
-  //       return new Promise((resolve) => {
-  //         if (img.complete) {
-  //           resolve();
-  //         } else {
-  //           img.onload = resolve;
-  //         }
-  //       });
-  //     });
-  
-  //     await Promise.all(imagePromises);
-  
-  //     const canvas = await html2canvas(formElement, {
-  //       scale: 2,
-  //       logging: true,
-  //       // Set background to white to avoid transparency issues
-  //       backgroundColor: "#ffffff",
-  //     });
-  
-  //     const imgData = canvas.toDataURL("image/png");
-  //     const pdf = new jsPDF("p", "mm", "a4");
-  
-  //     const pdfWidth = pdf.internal.pageSize.getWidth();
-  //     const pdfHeight = pdf.internal.pageSize.getHeight();
-  
-  //     const totalHeight = canvas.height * pdfWidth / canvas.width;
-  //     let yPosition = 0;
-  
-  //     while (yPosition < totalHeight) {
-  //       pdf.addImage(imgData, "PNG", 0, yPosition, pdfWidth, pdfHeight);
-  //       yPosition += pdfHeight;
-  //     }
-  
-  //     pdf.save(`${id}_form.pdf`);
-  //   } catch (error) {
-  //     console.error("Error generating PDF:", error);
-  //     notification.error({ message: "Error While generating pdf", description: error.message });
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-  
-
-  const handleDownloadPDF = async () => {
-    try {
-      setLoading(true);
-  
-      const formElement = document.getElementById("form-container");
-      const images = formElement.querySelectorAll("img");
-  
-      // Set crossOrigin attribute for all images to handle external URLs
-      images.forEach((img) => {
-        if (!img.crossOrigin) {
-          img.crossOrigin = "anonymous";
-        }
-      });
-  
-      // Wait for all images to load
-      const imagePromises = Array.from(images).map((img) => {
-        return new Promise((resolve) => {
-          if (img.complete) {
-            resolve();
-          } else {
-            img.onload = resolve;
-            img.onerror = resolve; // Handle any image load errors gracefully
-          }
-        });
-      });
-  
-      await Promise.all(imagePromises);
-  
-      // Capture the form with html2canvas
-      const canvas = await html2canvas(formElement, {
-        scale: 2,
-        logging: true,
-        backgroundColor: "#ffffff", // Ensure a white background
-      });
-  
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "mm", "a4");
-  
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-  
-      const totalHeight = (canvas.height * pdfWidth) / canvas.width;
-      let yPosition = 0;
-  
-      while (yPosition < totalHeight) {
-        pdf.addImage(imgData, "PNG", 0, yPosition, pdfWidth, pdfHeight);
-        yPosition += pdfHeight;
-        if (yPosition < totalHeight) {
-          pdf.addPage(); // Add a new page if needed
-        }
-      }
-  
-      pdf.save(`${id}_form.pdf`);
-    } catch (error) {
-      console.error("Error generating PDF:", error);
-      notification.error({
-        message: "Error While generating pdf",
-        description: error.message,
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-  
+ 
 
   const [nationality, setNationality] = useState("");
   const [disabled, setDisablity] = useState("");
@@ -251,7 +139,7 @@ function EditStudents() {
 
   return (
     <div id="form-container" style={{ padding: '24px', border: "1px solid black", borderRadius: "5px" }}>
-      <Card title="DPED Application Form">
+      <Card title={<div style={{ textAlign: 'center' }}>DPED APPLICATION FORM</div>}>
         <Form
           disabled={formStatus === "submitted"}
           form={form}

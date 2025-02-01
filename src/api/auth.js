@@ -38,3 +38,8 @@ export const getCandidateDetails = async (id) => {
 export const updateCandidate = async (id, data) => {
   return await axios.put(`/candidates/${id}`, data);
 };
+
+
+export const getNotificationList = async () => {
+  return await axios.get("/important-links");
+}
