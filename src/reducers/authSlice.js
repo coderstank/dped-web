@@ -11,7 +11,7 @@ const counterSlice = createSlice({
   reducers: {
     login: (state, action) => {
       state.isAuthenticated = true;
-      sessionStorage.setItem("token", action.payload.token);
+      sessionStorage.setItem("token", action.payload);
     },
     logout: (state) => {
       sessionStorage.clear();

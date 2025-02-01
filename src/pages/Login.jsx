@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import "../css/pages/login.css";
 import { Form, Input, Button, notification } from 'antd';
 import { loginUser } from "../api/auth";
-import { login } from "../reducers/authSlice";
+import { login, setUser } from "../reducers/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 function Login() {
@@ -15,7 +15,9 @@ function Login() {
     try {
       setLoading(true)
       const { data } = await loginUser(values);
-      dispatch(login(data));
+      console.log(data)
+      dispatch(login(data.token));
+      dispatch(setUser(data.user));
       notification.success({ message :  "Welcome Sir" });
       navigate("/");
     } catch (error) {

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 const { Option } = Select;
 import { AddCandidate } from '../api/auth';
 import UploadFile from "../components/UploadFile";
+import moment from 'moment';
 function AddStudent() {
   const navigate = useNavigate();
   const [form] = Form.useForm();
@@ -93,6 +94,13 @@ function AddStudent() {
       }
     };
 
+    const validateAge = (_, value) => {
+      const age = moment().diff(moment(value, "YYYY-MM-DD"), 'years');
+      if (age < 17 || age > 60) {
+        return Promise.reject('Age must be between 17 and 60 years');
+      }
+      return Promise.resolve();
+    };
 
 
   return (
@@ -238,8 +246,9 @@ function AddStudent() {
             <Col span={8}>
               <Form.Item
                 name="dob"
+                
                 label="Date of Birth"
-                rules={[{ required: true, message: 'Please select date of birth' }]}>
+                rules={[{ required: true, message: 'Please select date of birth' },{validator:validateAge}]}>
                 <Input type='date' style={{ width: '100%' }} placeholder="DD/MM/YYYY" format="DD/MM/YYYY" />
               </Form.Item>
             </Col>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "antd";
+import { Button, Flex, Typography } from "antd";
 import { LogoutOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,6 +10,7 @@ const Navbar = () => {
 
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
+  console.log('user',user?.name)
   const navigate = useNavigate();
   const onLogout = async () => {
     dispatch(logout());
@@ -18,13 +19,13 @@ const Navbar = () => {
   };
   return (
     <div className="navbar-container">
-      <div style={{ display: "flex" }}></div>
-      <div className="navbar-left-container">
-      <p>{user?.name}</p>
+        <Flex style={{width:'100%'}} align="center" justify="space-between">
+
+      <Typography.Title   level={5} style={{textTransform:'uppercase',color:'white',margin:0}}>{user?.name}</Typography.Title>
         <Button onClick={onLogout} icon={<LogoutOutlined />}>
           Logout
         </Button>
-      </div>
+        </Flex>
     </div>
   );
 };
