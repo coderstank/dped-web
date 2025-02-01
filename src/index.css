@@ -19,6 +19,7 @@ body::-webkit-scrollbar {
 .content-print {
   @media print {
     margin: 0 !important;
+
   }
 }
 
@@ -48,5 +49,8 @@ body::-webkit-scrollbar {
     left: 0;
     top: 0;
     width: 100%;
+  }
+  .print-hide{
+    display: none;
   }
 }

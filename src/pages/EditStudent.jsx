@@ -701,7 +701,7 @@ function EditStudents() {
               <>
                 <Button
                 className="print-hide"
-                  style={{ width: "100%", marginTop: "20px" }}  onClick={() => navigate("/students")} type="primary" htmlType="button">
+                  style={{ width: "100%", marginTop: "20px" }} disabled={false} onClick={() => navigate("/students")} type="primary" htmlType="button">
                   Back
                 </Button>
                 <Button
@@ -710,9 +710,9 @@ function EditStudents() {
                   icon={<DownloadOutlined />}
                   style={{ width: "100%", marginTop: "20px" }}
                   type="default"
-                  // onClick={handleDownloadPDF}
+                 
                   onClick={() => window.print()}
-                  // onClick={()=>reactToPrintFn()}
+                 
                 >
                   {loading ? 'Loading' :
                     'Print'
@@ -722,7 +722,7 @@ function EditStudents() {
 
               :
               <Button
-                disabled={!loading}
+                disabled={loading}
                 style={{ width: "100%", marginTop: "20px" }} type="primary" htmlType="submit">
                 Update
               </Button>
