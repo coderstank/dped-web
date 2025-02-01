@@ -69,7 +69,7 @@ function Login() {
                   <li style={{ padding: "12px" }}>
                     <a
                       style={{ textTransform: "uppercase" }}
-                      href={`${import.meta.env.VITE_FILE_URL}/files/others/${
+                      href={`${import.meta.env.VITE_BASE_URL}/files/others/${
                         file.filename
                       }`}
                       target="_blank"
