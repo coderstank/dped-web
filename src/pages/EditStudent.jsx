@@ -102,7 +102,7 @@ function EditStudents() {
       setLoading(true)
 
       const { data } = await updateCandidatesById(id, values);
-      notification.success('Candidate updated successfully!')
+      notification.success({message:'Candidate updated successfully!'})
       navigate("/students");
     } catch (error) {
       notification.error({ message: error.message || "something went wrong" });
@@ -167,21 +167,6 @@ function EditStudents() {
             </Col>
             <Col span={12}>
               <Form.Item
-                name="name_in_hindi"
-                label="Student's Name in Hindi"
-                rules={[{ required: true, message: 'Please enter student name in Hindi' },
-                { validator: validateHindiName },
-                ]}>
-                <Input placeholder="Enter name in Hindi"
-
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
                 name="mother_name"
                 label="Mother's Name (In English)"
                 rules={[{ required: true, message: 'Please enter mother name in English' },
@@ -193,16 +178,6 @@ function EditStudents() {
                 <Input placeholder="Enter mother's name in English"
                   onChange={(e) => handleUppercase('mother_name', e.target.value)}
                 />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="mother_name_in_hindi"
-                label="Mother's Name in Hindi"
-                rules={[{ required: true, message: 'Please enter mother name in Hindi' },
-                { validator: validateHindiName },
-                ]}>
-                <Input placeholder="Enter mother's name in Hindi" />
               </Form.Item>
             </Col>
           </Row>
@@ -225,26 +200,18 @@ function EditStudents() {
             </Col>
             <Col span={12}>
               <Form.Item
-                name="father_name_in_hindi"
-                label="Father's Name in Hindi"
-                rules={[{ required: true, message: 'Please enter father name in Hindi' },
-                { validator: validateHindiName },
-                ]}>
-                <Input placeholder="Enter father's name in Hindi" />
-              </Form.Item>
-            </Col>
-          </Row>
-
-
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
                 name="mobile_number"
                 label="Mobile"
                 rules={[{ required: true, message: 'Please enter mobile number' }, { pattern: /^[0-9]{10}$/, message: 'Please enter a valid 10-digit mobile number' }]}>
                 <Input placeholder="Enter mobile number" maxLength={10} />
               </Form.Item>
             </Col>
+          
+          </Row>
+
+
+          <Row gutter={16}>
+           
             <Col span={12}>
               <Form.Item
                 name="email"
@@ -253,6 +220,37 @@ function EditStudents() {
                 <Input placeholder="Enter email address"
                   onChange={(e) => handleUppercase('email', e.target.value)}
                 />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="aadhar_no"
+                label="Aadhar"
+                rules={[{ required: true, message: 'Please enter aadhar number' },
+                { pattern: /^[0-9]{12}$/, message: 'Please enter a valid 12-digit aadhar number' }
+
+                ]}>
+                <Input placeholder="Enter your aadhar number" maxLength={12} />
+              </Form.Item>
+            </Col>
+          </Row>
+
+         
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="pincode"
+                label="Pincode"
+                rules={[{ required: true, message: 'Please enter pincode number' }, { pattern: /^[0-9]{6}$/, message: 'Please enter a valid 6-digit pincode number' }]}>
+                <Input placeholder="Enter pin number" maxLength={6} />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="dob"
+                label="Date of Birth"
+                rules={[{ required: true, message: 'Please select date of birth' }]}>
+                <Input type='date' style={{ width: '100%' }} placeholder="DD/MM/YYYY" format="DD/MM/YYYY" />
               </Form.Item>
             </Col>
 
@@ -268,38 +266,6 @@ function EditStudents() {
                 />
               </Form.Item>
             </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={8}>
-              <Form.Item
-                name="pincode"
-                label="Pincode"
-                rules={[{ required: true, message: 'Please enter pincode number' }, { pattern: /^[0-9]{6}$/, message: 'Please enter a valid 6-digit pincode number' }]}>
-                <Input placeholder="Enter pin number" maxLength={6} />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item
-                name="dob"
-                label="Date of Birth"
-                rules={[{ required: true, message: 'Please select date of birth' }]}>
-                <Input type='date' style={{ width: '100%' }} placeholder="DD/MM/YYYY" format="DD/MM/YYYY" />
-              </Form.Item>
-            </Col>
-
-            <Col span={8}>
-              <Form.Item
-                name="aadhar_no"
-                label="Aadhar"
-                rules={[{ required: true, message: 'Please enter aadhar number' },
-                { pattern: /^[0-9]{12}$/, message: 'Please enter a valid 12-digit aadhar number' }
-
-                ]}>
-                <Input placeholder="Enter your aadhar number" maxLength={12} />
-              </Form.Item>
-            </Col>
-
-
           </Row>
 
           <h3>Additional Information</h3>
