@@ -134,6 +134,7 @@ function EditStudents() {
       setNationality(data.nationality);
       setReligion(data.religion);
       setFormStatus(data.application_state);
+      form.setFieldValue('principal_signature',`${import.meta.env.VITE_BASE_URL}/images/principal-signature/`+data.principal_signature)
     } catch (error) {
       notification.error({
         message: "Error fetching candidate data",
@@ -688,7 +689,7 @@ function EditStudents() {
                   style={{ textTransform: "uppercase" }}
                   placeholder="Select marital status"
                 >
-                  <Option value="MARRID">MARRID</Option>
+                  <Option value="MARRIED">MARRIED</Option>
                   <Option value="UNMARRIED">UNMARRIED</Option>
                 </Select>
               </Form.Item>

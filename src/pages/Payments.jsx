@@ -31,7 +31,7 @@ function Payments() {
       title: 'Amount',
       dataIndex: 'payment_amount',
       key: 'payment_amount',
-      render : (_,{payment_amount})=><p>${payment_amount}</p>
+      render : (_,{payment_amount})=><p>₹{payment_amount}</p>
     },
     {
       title: 'Date',
