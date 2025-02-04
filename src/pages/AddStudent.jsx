@@ -59,6 +59,19 @@ function AddStudent() {
     }
     return Promise.reject(new Error("Numeric values only"));
   };
+  const validateObtaionMarks = (_, value) => {
+    if (!value) {
+      return Promise.reject(new Error("Marks must be entered"));
+    }
+    if (value < 0 || value > 1200) {
+      return Promise.reject(new Error('Marks must be between 0 and 1200'));
+    }
+    if (!/^\d+(\.\d{1,2})?$/.test(value)) {
+      return Promise.reject(new Error("Numeric values only"));
+    }
+    return Promise.resolve();
+  };
+  
 
   const validatePercentage = (_, value) => {
     if (!value) {
@@ -85,20 +98,10 @@ function AddStudent() {
     );
   };
 
-  const validateHindiName = (_, value) => {
-    if (!value) {
-      return Promise.reject(new Error("Student's name in Hindi is required"));
-    }
-    if (/^[\u0900-\u097F\s]+$/.test(value)) {
-      return Promise.resolve();
-    }
-    return Promise.reject(new Error("Only Hindi characters are allowed"));
-  };
-
-  const onFinishLogin = async (values) => {
-    delete values.college_name
-    delete values.college_code
-    delete values.principal_signature
+  const onFinish = async (values) => {
+    delete values.college_name;
+    delete values.college_code;
+    delete values.principal_signature;
 
     // console.log(values)
 
@@ -132,7 +135,7 @@ function AddStudent() {
     form.setFieldValue(
       "principal_signature",
       `${import.meta.env.VITE_BASE_URL}/images/principal-signature/` +
-      user?.principal_signature
+        user?.principal_signature
     );
   }, []);
 
@@ -150,12 +153,23 @@ function AddStudent() {
         <Form
           form={form}
           layout="vertical"
-          onFinish={onFinishLogin}
+          onFinish={onFinish}
           onFinishFailed={handleFinishFailed}
           autoComplete="off"
         >
           <h3>Personal Information</h3>
           <Row gutter={16}>
+          <Col span={12}>
+              <Form.Item name="college_name" label="College Name">
+                <Input
+                  placeholder="College name"
+                  readOnly
+                  onChange={(e) =>
+                    handleUppercase("college_name", e.target.value)
+                  }
+                />
+              </Form.Item>
+            </Col>
             <Col span={12}>
               <Form.Item name="college_code" label="College Code">
                 <Input
@@ -167,17 +181,7 @@ function AddStudent() {
                 />
               </Form.Item>
             </Col>
-            <Col span={12}>
-              <Form.Item name="college_name" label="College Name">
-                <Input
-                  placeholder="College name"
-                  readOnly
-                  onChange={(e) =>
-                    handleUppercase("college_name", e.target.value)
-                  }
-                />
-              </Form.Item>
-            </Col>
+            
           </Row>
 
           <Row gutter={16}>
@@ -585,7 +589,7 @@ function AddStudent() {
                 label="Marks Obtained"
                 rules={[
                   { required: true, message: "Please enter marks" },
-                  { validator: validateMarks },
+                  { validator: validateObtaionMarks },
                 ]}
               >
                 <Input placeholder="Enter marks" maxLength={4} />
@@ -680,41 +684,45 @@ function AddStudent() {
             </Col>
           </Row>
 
-          <Row gutter={24} style={{
-            padding: "10px",
-            border: "1px solid black",
-            borderRadius: "5px",
-            marginBottom: "30px"
-          }}>
+          <Row
+            gutter={24}
+            style={{
+              padding: "10px",
+              border: "1px solid black",
+              borderRadius: "5px",
+              marginBottom: "30px",
+            }}
+          >
             <Col span={24}>
-
               <Space direction="vertical">
-                <Title style={{ margin: '0px 0px 10px' }} level={5}>Aadhar Declaration</Title>
+                <Title style={{ margin: "0px 0px 10px" }} level={5}>
+                  Aadhar Declaration
+                </Title>
                 <p style={{ height: "auto" }}>
-                  यदि विद्यार्थी के द्वारा उपर्युक्त क्रमांक-22 में ’’आधार नंबर’’
-                  अंकित नहीं किया गया है, तो उनके द्वारा निम्नांकित घोषणा की
-                  जाएगीः- (कृपया नोट करें कि यहाँ किसी भी तरह की गलत घोषणा के लिए
-                  विद्यार्थी के विरूद्ध कार्रवाई की जा सकेगी तथा आधार नम्बर नहीं
-                  होने के संबंध में इस मिथ्या/गलत घोषणा के कारण उनका अभ्यर्थित्व
-                  रद्द किया जा सकता है।)
+                  यदि विद्यार्थी के द्वारा उपर्युक्त क्रमांक-22 में ’’आधार
+                  नंबर’’ अंकित नहीं किया गया है, तो उनके द्वारा निम्नांकित घोषणा
+                  की जाएगीः- (कृपया नोट करें कि यहाँ किसी भी तरह की गलत घोषणा के
+                  लिए विद्यार्थी के विरूद्ध कार्रवाई की जा सकेगी तथा आधार नम्बर
+                  नहीं होने के संबंध में इस मिथ्या/गलत घोषणा के कारण उनका
+                  अभ्यर्थित्व रद्द किया जा सकता है।)
                 </p>
                 <p style={{ height: "auto" }}>
                   घोषणा
                   <br style={{ marginTop: 10 }} />
-                  मैं, एतद् द्वारा घोषित करता हूँ
-                  कि मैंने ‘‘आधार नंबर’’ आवंटित करने के लिए आवेदन नहीं किया है तथा
-                  मुझे ‘‘आधार नंबर’’ आवंटित नहीं हुआ है। मैं यह भी समझता हूँ कि
-                  मेरे द्वारा की गई इस मिथ्या/गलत घोषणा के आधार पर मेरा
-                  अभ्यर्थित्व रद्द किया जा सकता है।
+                  मैं, एतद् द्वारा घोषित करता हूँ कि मैंने ‘‘आधार नंबर’’ आवंटित
+                  करने के लिए आवेदन नहीं किया है तथा मुझे ‘‘आधार नंबर’’ आवंटित
+                  नहीं हुआ है। मैं यह भी समझता हूँ कि मेरे द्वारा की गई इस
+                  मिथ्या/गलत घोषणा के आधार पर मेरा अभ्यर्थित्व रद्द किया जा सकता
+                  है।
                 </p>
 
                 <p style={{ height: "auto" }}>
-                  If student has not given
-                  "Aadhar number" in Sl. No. 19 above, then following declaration
-                  should be given by student :- (Please note that any WRONG
-                  DECLARATION made here, may invite action against the student and
-                  his/her candidature may be cancelled due to making falseful
-                  declaration about non-allotment of "Aadhar number")
+                  If student has not given "Aadhar number" in Sl. No. 19 above,
+                  then following declaration should be given by student :-
+                  (Please note that any WRONG DECLARATION made here, may invite
+                  action against the student and his/her candidature may be
+                  cancelled due to making falseful declaration about
+                  non-allotment of "Aadhar number")
                 </p>
                 <p style={{ height: "auto" }}>
                   DECLARATION
@@ -724,37 +732,38 @@ function AddStudent() {
                   declaration made by me in this regard may have consequence of
                   cancellation of my candidature.
                 </p>
-                
-                <Form.Item
-        shouldUpdate={(prevValues, currentValues) =>
-          prevValues.aadhar_no !== currentValues.aadhar_no
-        }
-      >
-        {() => (
-          <Form.Item
-            name="aadhar_declaration"
-            valuePropName="checked"
-            label={null}
-            rules={[
-              {
-                validator: (_, value) =>
-                  !form.getFieldValue('aadhar_no') && !value
-                    ? Promise.reject(new Error('Should accept agreement'))
-                    : Promise.resolve(),
-              },
-            ]}
-            style={{ marginTop: '30px' }}
-          >
-            <Checkbox style={{ color: 'red' }}>Aadhar declaration</Checkbox>
-          </Form.Item>
-        )}
-      </Form.Item>
-              </Space>
 
+                <Form.Item
+                  shouldUpdate={(prevValues, currentValues) =>
+                    prevValues.aadhar_no !== currentValues.aadhar_no
+                  }
+                >
+                  {() => (
+                    <Form.Item
+                      name="aadhar_declaration"
+                      valuePropName="checked"
+                      label={null}
+                      rules={[
+                        {
+                          validator: (_, value) =>
+                            !form.getFieldValue("aadhar_no") && !value
+                              ? Promise.reject(
+                                  new Error("Should accept agreement")
+                                )
+                              : Promise.resolve(),
+                        },
+                      ]}
+                      style={{ marginTop: "30px" }}
+                    >
+                      <Checkbox style={{ color: "red" }}>
+                        Aadhar declaration
+                      </Checkbox>
+                    </Form.Item>
+                  )}
+                </Form.Item>
+              </Space>
             </Col>
           </Row>
-
-
 
           <Row gutter={16}>
             <Col span={8}>
@@ -772,7 +781,7 @@ function AddStudent() {
                   <Form.Item
                     name={"sign"}
                     label={"Student Signature"}
-                  // rules={[requiredRule("sign")]}
+                    // rules={[requiredRule("sign")]}
                   >
                     <UploadFile
                       setFile={(e) => {
@@ -833,7 +842,7 @@ function AddStudent() {
                   <Form.Item
                     name={"photo"}
                     label={"Student signature"}
-                  // rules={[requiredRule("sign")]}
+                    // rules={[requiredRule("sign")]}
                   >
                     <UploadFile
                       setFile={(e) => {
@@ -881,7 +890,7 @@ function AddStudent() {
             </Col>
             <Col span={8}>
               <div>
-              <p
+                <p
                   style={{
                     color: "black",
                     margin: "12px 0",
@@ -894,9 +903,8 @@ function AddStudent() {
                   <Form.Item
                     name={"principal_signature"}
                     label={"Principal signature"}
-                  // rules={[requiredRule("sign")]}
+                    // rules={[requiredRule("sign")]}
                   >
-                    
                     <Form.Item
                       noStyle
                       shouldUpdate={(prev, curr) =>
@@ -928,39 +936,52 @@ function AddStudent() {
             </Col>
           </Row>
 
-          <Row gutter={24} style={{
-            padding: "10px",
-            border: "1px solid black",
-            borderRadius: "5px",
-            marginBottom: "30px"
-          }}>
+          <Row
+            gutter={24}
+            style={{
+              padding: "10px",
+              border: "1px solid black",
+              borderRadius: "5px",
+              marginBottom: "30px",
+            }}
+          >
             <Col span={24}>
-
               <Space direction="vertical">
-                <Title style={{ margin: '0px 0px 10px' }} level={5}>Declaration</Title>
+                <Title style={{ margin: "0px 0px 10px" }} level={5}>
+                  Declaration
+                </Title>
                 <p style={{ height: "auto" }}>
-                  I confirm that the informations given in this form is true, complete and accurate to the best of my knowledge
-                  and belief and in case any of the above informations is found to be false or untrue or misleading or misrepresenting,
-                  it may lead to cancellation of the my candidature and BSEB can take legal action against me.
+                  I confirm that the informations given in this form is true,
+                  complete and accurate to the best of my knowledge and belief
+                  and in case any of the above informations is found to be false
+                  or untrue or misleading or misrepresenting, it may lead to
+                  cancellation of the my candidature and BSEB can take legal
+                  action against me.
                 </p>
                 <p style={{ height: "auto" }}>
-                  I decalre that the above informations are true and as per the college record. The registration of the candidate
-                  may be allowed.
+                  I decalre that the above informations are true and as per the
+                  college record. The registration of the candidate may be
+                  allowed.
                 </p>
                 <Form.Item
-                rules={[
-                  {
-                    validator: (_, value) =>
-                      value
-                        ? Promise.resolve()
-                        : Promise.reject(new Error('Should accept agreement')),
-                  },
-                ]}
-                  style={{ marginTop: "30px" }} name="declaration" valuePropName="checked" label={null}>
-                  <Checkbox  style={{ color: 'red' }}>Declaration</Checkbox>
+                  rules={[
+                    {
+                      validator: (_, value) =>
+                        value
+                          ? Promise.resolve()
+                          : Promise.reject(
+                              new Error("Should accept agreement")
+                            ),
+                    },
+                  ]}
+                  style={{ marginTop: "30px" }}
+                  name="declaration"
+                  valuePropName="checked"
+                  label={null}
+                >
+                  <Checkbox style={{ color: "red" }}>Declaration</Checkbox>
                 </Form.Item>
               </Space>
-
             </Col>
           </Row>
           <Form.Item>
