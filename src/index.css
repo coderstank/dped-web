@@ -33,15 +33,18 @@ body::-webkit-scrollbar {
   background-color: #001529;
 }
 
+
 @media print {
   body * {
     visibility: hidden;
+    font-size: 10px;
   }
   
-  
+ 
   #form-container, 
   #form-container * {
     visibility: visible;
+    padding: 0;
   }
   
   #form-container {

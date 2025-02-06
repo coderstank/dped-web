@@ -29,7 +29,12 @@ function AddStudent() {
   const [disabled, setDisablity] = useState("");
   const [religion, setReligion] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showDeclaration, setShowDeclaration] = useState(true);
 
+  const handleAadharChange = () => {
+    const aadharNumber = form.getFieldValue("aadhar_no");
+    setShowDeclaration(!aadharNumber);
+  };
   const handleNationalityChange = (value) => {
     setNationality(value);
   };
@@ -122,12 +127,15 @@ function AddStudent() {
   };
 
   const validateAge = (_, value) => {
-    const age = moment().diff(moment(value, "YYYY-MM-DD"), "years");
-    if (age < 17 || age > 60) {
-      return Promise.reject("Age must be between 17 and 60 years");
+    const birthDate = moment(value, "YYYY-MM-DD");
+    const referenceDate = moment("2024-01-01", "YYYY-MM-DD");
+    const age = referenceDate.diff(birthDate, "years");
+
+    if (age < 17) {
+        return Promise.reject("Age must be at least 17 years as of 1-01-2024");
     }
     return Promise.resolve();
-  };
+};
 
   useEffect(() => {
     form.setFieldValue("college_name", user?.name);
@@ -148,7 +156,7 @@ function AddStudent() {
       }}
     >
       <Card
-        title={<div style={{ textAlign: "center" }}>DPED APPLICATION FORM</div>}
+        title={<div style={{ textAlign: "center" }}>DPED REGISTRATION FORM </div>}
       >
         <Form
           form={form}
@@ -156,6 +164,7 @@ function AddStudent() {
           onFinish={onFinish}
           onFinishFailed={handleFinishFailed}
           autoComplete="off"
+          onValuesChange={handleAadharChange}
         >
           <h3>Personal Information</h3>
           <Row gutter={16}>
@@ -386,21 +395,43 @@ function AddStudent() {
             </Col>
           </Row>
           <Row gutter={16}>
-            <Col span={8}>
+          <Col span={8}>
               <Form.Item
-                name="pincode"
-                label="Pincode"
-                rules={[
-                  { required: true, message: "Please enter pincode number" },
-                  {
-                    pattern: /^[0-9]{6}$/,
-                    message: "Please enter a valid 6-digit pincode number",
-                  },
-                ]}
+                name="differently_abled"
+                label="Differently Abled"
+                rules={[{ required: true, message: "Please select " }]}
               >
-                <Input placeholder="Enter pin number" maxLength={6} />
+                <Select
+                  style={{ textTransform: "uppercase" }}
+                  placeholder="Please select"
+                  value={nationality}
+                  onChange={handleDisabledChange}
+                >
+                  <Option value="YES">YES</Option>
+                  <Option value="NO">NO</Option>
+                </Select>
               </Form.Item>
+              {disabled === "YES" && (
+                <Form.Item
+                  name="differently_abled_others"
+                  label="Specify (if Yes)"
+                  rules={[
+                    { required: true, message: "Please specify Disability" },
+                  ]}
+                >
+                  <Input
+                    placeholder="Enter Disability"
+                    onChange={(e) =>
+                      handleUppercase(
+                        "differently_abled_others",
+                        e.target.value
+                      )
+                    }
+                  />
+                </Form.Item>
+              )}
             </Col>
+         
             <Col span={8}>
               <Form.Item
                 name="mobile_number"
@@ -505,7 +536,7 @@ function AddStudent() {
             <Col span={8}>
               <Form.Item
                 name="exam_medium"
-                label="Medium"
+                label="Medium of Appearing"
                 rules={[{ required: true, message: "Please select " }]}
               >
                 <Select
@@ -543,7 +574,8 @@ function AddStudent() {
             <Col span={8}>
               <Form.Item
                 name="class_12_board_code"
-                label="Class XII passing Board's roll code"
+                label="Class XII passing Board's Roll code
+"
                 rules={[
                   { required: true, message: "Please enter board code" },
                   { validator: validate },
@@ -630,47 +662,25 @@ function AddStudent() {
           </Row>
 
           <Row gutter={16}>
-            <Col span={8}>
+          <Col span={12}>
               <Form.Item
-                name="differently_abled"
-                label="Differently Abled"
-                rules={[{ required: true, message: "Please select " }]}
+                name="pincode"
+                label="Pincode"
+                rules={[
+                  { required: true, message: "Please enter pincode number" },
+                  {
+                    pattern: /^[0-9]{6}$/,
+                    message: "Please enter a valid 6-digit pincode number",
+                  },
+                ]}
               >
-                <Select
-                  style={{ textTransform: "uppercase" }}
-                  placeholder="Please select"
-                  value={nationality}
-                  onChange={handleDisabledChange}
-                >
-                  <Option value="YES">YES</Option>
-                  <Option value="NO">NO</Option>
-                </Select>
+                <Input placeholder="Enter pin number" maxLength={6} />
               </Form.Item>
-              {disabled === "YES" && (
-                <Form.Item
-                  name="differently_abled_others"
-                  label="Specify Disability"
-                  rules={[
-                    { required: true, message: "Please specify Disability" },
-                  ]}
-                >
-                  <Input
-                    placeholder="Enter Disability"
-                    onChange={(e) =>
-                      handleUppercase(
-                        "differently_abled_others",
-                        e.target.value
-                      )
-                    }
-                  />
-                </Form.Item>
-              )}
             </Col>
-
-            <Col span={8}>
+          <Col span={12}>
               <Form.Item
                 name="aadhar_no"
-                label="Aadhar"
+                label="Aadhar Number"
                 rules={[
                   // { required: true, message: "Please enter aadhar number" },
                   {
@@ -682,8 +692,10 @@ function AddStudent() {
                 <Input placeholder="Enter your aadhar number" maxLength={12} />
               </Form.Item>
             </Col>
+            
+           
           </Row>
-
+          {showDeclaration && (
           <Row
             gutter={24}
             style={{
@@ -693,6 +705,7 @@ function AddStudent() {
               marginBottom: "30px",
             }}
           >
+         
             <Col span={24}>
               <Space direction="vertical">
                 <Title style={{ margin: "0px 0px 10px" }} level={5}>
@@ -763,10 +776,11 @@ function AddStudent() {
                 </Form.Item>
               </Space>
             </Col>
+            
           </Row>
-
+          )}
           <Row gutter={16}>
-            <Col span={8}>
+            <Col span={12}>
               <div>
                 <p
                   style={{
@@ -827,7 +841,7 @@ function AddStudent() {
                 </div>
               </div>
             </Col>
-            <Col span={8}>
+            <Col span={12}>
               <div>
                 <p
                   style={{
@@ -888,52 +902,7 @@ function AddStudent() {
                 </div>
               </div>
             </Col>
-            <Col span={8}>
-              <div>
-                <p
-                  style={{
-                    color: "black",
-                    margin: "12px 0",
-                  }}
-                >
-                  Upload Signature with White Background (Signature Size 10 KB
-                  to 50 KB) only .jpg
-                </p>
-                <div style={{ display: "flex", gap: "16px" }}>
-                  <Form.Item
-                    name={"principal_signature"}
-                    label={"Principal signature"}
-                    // rules={[requiredRule("sign")]}
-                  >
-                    <Form.Item
-                      noStyle
-                      shouldUpdate={(prev, curr) =>
-                        prev.principal_signature !== curr.principal_signature
-                      }
-                    >
-                      {() => {
-                        return (
-                          <div style={{ margin: "16px 0" }}>
-                            <img
-                              src={`${form.getFieldValue([
-                                "principal_signature",
-                              ])}?${performance.now()}`}
-                              alt="principal_signature"
-                              style={{
-                                height: "150px",
-                                width: "150px",
-                                border: "1px solid black",
-                                objectFit: "contain",
-                              }}
-                            />
-                          </div>
-                        );
-                      }}
-                    </Form.Item>
-                  </Form.Item>
-                </div>
-              </div>
-            </Col>
+            
           </Row>
 
           <Row
@@ -982,6 +951,46 @@ function AddStudent() {
                   <Checkbox style={{ color: "red" }}>Declaration</Checkbox>
                 </Form.Item>
               </Space>
+            </Col>
+          </Row>
+          <Row gutter={16} justify="end">
+          <Col span={8}>
+              <div>
+               
+                <div style={{ display: "flex", gap: "16px" }}>
+                  <Form.Item
+                    name={"principal_signature"}
+                    label={"Principal signature"}
+                    // rules={[requiredRule("sign")]}
+                  >
+                    <Form.Item
+                      noStyle
+                      shouldUpdate={(prev, curr) =>
+                        prev.principal_signature !== curr.principal_signature
+                      }
+                    >
+                      {() => {
+                        return (
+                          <div style={{ margin: "16px 0" }}>
+                            <img
+                              src={`${form.getFieldValue([
+                                "principal_signature",
+                              ])}?${performance.now()}`}
+                              alt="principal_signature"
+                              style={{
+                                height: "150px",
+                                width: "150px",
+                                border: "1px solid black",
+                                objectFit: "contain",
+                              }}
+                            />
+                          </div>
+                        );
+                      }}
+                    </Form.Item>
+                  </Form.Item>
+                </div>
+              </div>
             </Col>
           </Row>
           <Form.Item>
