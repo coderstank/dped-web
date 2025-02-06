@@ -42,9 +42,9 @@ function Students() {
   const [limit,setLimit]=useState(50)
   const [page,setPage]=useState(1)
   const [pageDetails,setPageDetails]=useState({})
-  const getAllRecords = async (limit,page) => {
+  const getAllRecords = async (limit,page,application_state) => {
     try {
-       const { data } = await getAllCandidates(limit,page);
+       const { data } = await getAllCandidates(limit,page,application_state);
        setData(data.docs)
        setPageDetails({...data,docs:[]})
     } catch (error) {
@@ -57,7 +57,7 @@ function Students() {
           values.candidates=selectedStudents
           const data = await Payment(values);
           notification.success({message:'payment marked successful'})
-          getAllRecords(limit,page)
+          getAllRecords(limit,page,'')
           setSelectedStudents([])
           handleModalCancel()
           form.resetFields()
@@ -125,8 +125,12 @@ function Students() {
 
 
   useEffect(()=>{
-    getAllRecords(limit,page)
+    getAllRecords(limit,page,'')
   },[limit,page])
+
+  const handleSelect = (value) => {
+    getAllRecords(limit,1,value)
+  }
 
   return (
     <div>
@@ -143,6 +147,16 @@ function Students() {
             <Button disabled={!selectedStudents.length>0} onClick={handlePayClick} type="default">
               Pay Now ({selectedStudents.length})
             </Button>
+          <Select
+          style={{width:120,textAlign:'left'}}
+          defaultValue={''}
+          onChange={handleSelect}
+          options={[
+            {label:'All',value:''},
+            {label:'Pending',value:'saved'},
+            {label:'Submitted',value:'submitted'}
+          ]}
+          />
           </Space>
         </Col>
         </Row>
@@ -182,21 +196,6 @@ function Students() {
               form={form}
               onFinish={onFinishPayment}
             >
-            {/* <Form.Item
-              name={"candidates"}
-              label={"Candidates"}
-              rules={[{ required: true, message: "Please select candidates" }]}
-            >
-              <Select
-                mode="multiple"
-                placeholder="Select candidates"
-                options={data.map((student) => ({
-                  label: student.name,
-                  value: student.id,
-                }))}
-                
-              />
-            </Form.Item> */}
 
             <Form.Item
               name={"payment_amount"}

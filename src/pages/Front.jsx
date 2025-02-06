@@ -25,10 +25,14 @@ export default function Front() {
             <Text strong>ACCOUNT NUMBER:</Text> <Text>50100454546268</Text>
           </Col>
           <Col span={24} style={{ marginBottom: '10px' }}>
-            <Text strong>BRANCH NAME:</Text> <Text>MAURYALOK BRANCH</Text>
+            <Text strong>BRANCH NAME:</Text> <Text>मौर्यालोक शाखा</Text>
           </Col>
           <Col span={24}>
-            <Text strong>BRANCH ADDRESS:</Text> <Text>SANTOSH COMPLEX, GROUND FLOOR, SHOP NO. 2.A & 2.B, MAURYALOK, PATNA, 800001</Text>
+            <Text strong>BRANCH ADDRESS:</Text> <Text>
+संतोषा कॉम्प्लेक्स, ग्राउंड फ्लोर, शॉप नo-2.A तथा 2.B
+मौर्यालोक, पटना- 800001
+
+              </Text>
           </Col>
         </Row>
       </Card>
@@ -36,7 +40,7 @@ export default function Front() {
       <Card
         title={<Title level={4} style={{ color: '#fff',margin:'0' }}>2. Bank Details</Title>}
         bordered={false}
-        style={{ backgroundColor: '#9aa0ef', color: '#fff' }}
+        style={{ backgroundColor: 'rgb(154, 192, 238)', color: '#fff' }}
       >
         <Row>
           <Col span={24} style={{ marginBottom: '10px' }}>
@@ -49,10 +53,11 @@ export default function Front() {
             <Text strong>ACCOUNT NUMBER:</Text> <Text>2910000100296765</Text>
           </Col>
           <Col span={24} style={{ marginBottom: '10px' }}>
-            <Text strong>BRANCH NAME:</Text> <Text>BORING ROAD</Text>
+            <Text strong>BRANCH NAME:</Text> <Text>बोरिंग रोड</Text>
           </Col>
           <Col span={24}>
-            <Text strong>BRANCH ADDRESS:</Text> <Text>CHNADAN BHAWAN ,BORING ROAD , PATNA, 800001</Text>
+            <Text strong>BRANCH ADDRESS:</Text> <Text>
+            चन्दन भवन, बोरिंग रोड, पटना - 800001</Text>
           </Col>
         </Row>
       </Card>
