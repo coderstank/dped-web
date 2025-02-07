@@ -7,6 +7,7 @@ import EditStudents from '../pages/EditStudent';
 import Payments from '../pages/Payments';
 import Front from '../pages/Front';
 import AddStudent from '../pages/AddStudent';
+import PreviewForm from '../pages/PreviewForm';
 
 function App() {
 
@@ -19,6 +20,7 @@ function App() {
         <Route path="/add-student" element={<AddStudent />} /> 
         <Route path="/edit-student/:id" element={<EditStudents />} /> 
         <Route path="/payment" element={<Payments />} /> 
+        <Route path="/preview/:id" element={<PreviewForm />} /> 
       </Route>
     </Routes>
   );

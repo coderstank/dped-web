@@ -855,7 +855,7 @@ function AddStudent() {
                 <div style={{ display: "flex", gap: "16px" }}>
                   <Form.Item
                     name={"photo"}
-                    label={"Student signature"}
+                    label={"Student Photo"}
                     // rules={[requiredRule("sign")]}
                   >
                     <UploadFile

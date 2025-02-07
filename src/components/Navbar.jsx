@@ -21,7 +21,7 @@ const Navbar = () => {
     <div className="navbar-container">
         <Flex style={{width:'100%'}} align="center" justify="space-between">
 
-      <Typography.Title   level={5} style={{textTransform:'uppercase',color:'white',margin:0}}>{user?.name}</Typography.Title>
+      <Typography.Title className="cname"  level={5} style={{textTransform:'uppercase',color:'white',margin:0}}>{user?.name}</Typography.Title>
         <Button onClick={onLogout} icon={<LogoutOutlined />}>
           Logout
         </Button>

@@ -37,8 +37,8 @@ body::-webkit-scrollbar {
 @media print {
   body * {
     visibility: hidden;
-    font-size: 10px;
-  }
+    /* font-size: 8px; */
+   }  
   
  
   #form-container, 
@@ -53,7 +53,7 @@ body::-webkit-scrollbar {
     top: 0;
     width: 100%;
   }
-  .print-hide{
+  .navbar-container,.cname,.print-hide{
     display: none;
   }
 }

@@ -112,14 +112,35 @@ function Students() {
       key: "action",
       render: (text, record) => (
         <>
-        <Button type="primary"  onClick={() => navigate(`/edit-student/${record.id}`)}
-        >
-          view
-        </Button>
+        {record.application_state==="saved"?
         
+      
+        <Button   onClick={() => navigate(`/edit-student/${record.id}`)}
+        >
+          Edit
+        </Button>:
+        <Button type="primary"  onClick={() => navigate(`/preview/${record.id}`)}
+        >
+          Preview
+        </Button> 
+        }
+
        </>
       ),
     },
+    // {
+    //   title: "Action",
+    //   key: "action",
+    //   render: (text, record) => (
+    //     <>
+    //     <Button type="primary"  onClick={() => navigate(`/preview/${record.id}`)}
+    //     >
+    //       Preview
+    //     </Button>
+        
+    //    </>
+    //   ),
+    // },
   ];
 
 

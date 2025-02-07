@@ -124,6 +124,9 @@ function EditStudents() {
  
 
   const onFinish = async (values) => {
+    if(values.aadhar_no){
+      values.aadhar_declaration=false
+    }
     delete values.college_name;
     delete values.college_code;
     delete values.principal_signature;
