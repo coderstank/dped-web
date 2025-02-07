@@ -104,6 +104,9 @@ function AddStudent() {
   };
 
   const onFinish = async (values) => {
+    if(values.aadhar_no){
+      values.aadhar_declaration=false
+    }
     delete values.college_name;
     delete values.college_code;
     delete values.principal_signature;
@@ -849,7 +852,7 @@ function AddStudent() {
                     margin: "12px 0",
                   }}
                 >
-                  Upload Signature with White Background (Signature Size 10 KB
+                  Upload Photo(Photo Size 10 KB
                   to 50 KB) only .jpg
                 </p>
                 <div style={{ display: "flex", gap: "16px" }}>

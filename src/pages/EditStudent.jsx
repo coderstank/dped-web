@@ -873,7 +873,7 @@ function EditStudents() {
                     margin: "12px 0",
                   }}
                 >
-                  Upload Signature with White Background (Signature Size 10 KB
+                  Upload Photo (Photo Size 10 KB
                   to 50 KB) only .jpg
                 </p>
                 <div style={{ display: "flex", gap: "16px" }}>
