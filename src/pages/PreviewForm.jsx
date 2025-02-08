@@ -80,27 +80,29 @@ const PreviewForm = () => {
                   marginTop: "5px",
                 }}
               >
-                Dped registration form ke niche SESSION - (2024-2026)
+               D.P.Ed REGISTRATION FORM SESSION -(2024-2026)
               </h5>
             </div>
           </Col>
         </Row>
 
         <Row>
-          <Col span={6} style={{ border: "1px solid #000", padding: "15px" }}>
+          <Col span={4} style={{ border: "1px solid #000", padding: "5px" }}>
             <strong>College Name:</strong>
           </Col>
-          <Col span={6} style={{ border: "1px solid #000", padding: "15px" }}>
+          <Col span={20} style={{ border: "1px solid #000", padding: "5px" }}>
             {data.college_name}
           </Col>
-          <Col span={6} style={{ border: "1px solid #000", padding: "15px" }}>
+          
+        </Row>
+<Row>
+<Col span={4} style={{ border: "1px solid #000", padding: "5px" }}>
             <strong>College Code</strong>
           </Col>
-          <Col span={6} style={{ border: "1px solid #000", padding: "15px" }}>
+          <Col span={20} style={{ border: "1px solid #000", padding: "5px" }}>
             {data.college_code}
           </Col>
-        </Row>
-
+</Row>
         <Row>
           <Col span={18} style={{ border: "1px solid #000", padding: "8px" }}>
             <h2 style={{ marginTop: "0", marginBottom: "10px" }}>
@@ -111,13 +113,13 @@ const PreviewForm = () => {
                 span={6}
                 style={{ border: "1px solid #000", padding: "15px" }}
               >
-                <strong>Application ID:</strong>
+                <strong>Application Status :</strong>
               </Col>
               <Col
                 span={6}
                 style={{ border: "1px solid #000", padding: "15px" }}
               >
-                {data.application_state}
+                Paid
               </Col>
               <Col
                 span={6}
