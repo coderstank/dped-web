@@ -60,7 +60,7 @@ const PreviewForm = () => {
             <img
               src="/images/biharBoard.png"
               alt="College Logo"
-              style={{ width: "100px", height: "auto", marginRight: "20px" }}
+              style={{ width: "110px", height: "auto", marginRight: "20px" }}
             />
           </Col>
           <Col>
@@ -72,16 +72,36 @@ const PreviewForm = () => {
               }}
             >
               BIHAR SCHOOL EXAMINATION BOARD
-              <h5
+              <p
                 style={{
                   fontWeight: "bold",
-                  fontSize: "14px",
-                  textAlign: "left",
+                  fontSize: "17px",
+                  textAlign: "center",
                   marginTop: "5px",
                 }}
               >
-               D.P.Ed REGISTRATION FORM SESSION -(2024-2026)
-              </h5>
+                D.P.Ed REGISTRATION FORM
+              </p>
+              <p
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "17px",
+                  textAlign: "center",
+                  marginTop: "0px",
+                }}
+              >
+                TWO YEAR D.P.Ed. COURSE
+              </p>
+              <p
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "17px",
+                  textAlign: "center",
+                  marginTop: "0px",
+                }}
+              >
+                SESSION -(2024-2026)
+              </p>
             </div>
           </Col>
         </Row>
@@ -93,16 +113,15 @@ const PreviewForm = () => {
           <Col span={20} style={{ border: "1px solid #000", padding: "5px" }}>
             {data.college_name}
           </Col>
-          
         </Row>
-<Row>
-<Col span={4} style={{ border: "1px solid #000", padding: "5px" }}>
+        <Row>
+          <Col span={4} style={{ border: "1px solid #000", padding: "5px" }}>
             <strong>College Code</strong>
           </Col>
           <Col span={20} style={{ border: "1px solid #000", padding: "5px" }}>
             {data.college_code}
           </Col>
-</Row>
+        </Row>
         <Row>
           <Col span={18} style={{ border: "1px solid #000", padding: "8px" }}>
             <h2 style={{ marginTop: "0", marginBottom: "10px" }}>
@@ -165,22 +184,28 @@ const PreviewForm = () => {
               </Col>
             </Row>
 
-            <Row gutter={[16, 16]} >
+            <Row gutter={[16, 16]}>
               <Col
                 span={6}
-                style={{ border: "1px solid #000", padding: "15px",borderBottom:"none" }}
+                style={{
+                  border: "1px solid #000",
+                  padding: "15px",
+                  borderBottom: "none",
+                }}
               >
                 <strong>Father's Name:</strong>
               </Col>
               <Col
                 span={18}
-                style={{ border: "1px solid #000", padding: "15px",borderBottom:"none" }}
+                style={{
+                  border: "1px solid #000",
+                  padding: "15px",
+                  borderBottom: "none",
+                }}
               >
                 {data.father_name}
               </Col>
             </Row>
-
-           
           </Col>
 
           <Col
@@ -247,65 +272,40 @@ const PreviewForm = () => {
           </Col>
         </Row>
         <Row>
-              <Col
-                span={6}
-                style={{ border: "1px solid #000", padding: "10px" }}
-              >
-                <strong>Date of Birth:</strong>
-              </Col>
-              <Col
-                span={6}
-                style={{ border: "1px solid #000", padding: "10px" }}
-              >
-                {data.dob ? moment(data.dob).format("DD/MM/YYYY") : "N/A"}
-              </Col>
-              <Col
-                span={6}
-                style={{ border: "1px solid #000", padding: "10px" }}
-              >
-                <strong>Gender</strong>
-              </Col>
-              <Col
-                span={6}
-                style={{ border: "1px solid #000", padding: "10px" }}
-              >
-                {data.gender}
-              </Col>
-            </Row>
-
-           
-            <Row>
-              <Col
-                span={6}
-                style={{ border: "1px solid #000", padding: "10px" }}
-              >
-                <strong>Differently Abled:</strong>
-              </Col>
-              <Col
-                span={6}
-                style={{ border: "1px solid #000", padding: "10px" }}
-              >
-                {data.differently_abled}
-              </Col>
-              <Col
-                span={6}
-                style={{ border: "1px solid #000", padding: "10px" }}
-              >
-                <strong>Other Differently if:</strong>
-              </Col>
-              <Col
-                span={6}
-                style={{ border: "1px solid #000", padding: "10px" }}
-              >
-                {data.differently_abled_others}
-              </Col>
-            </Row>
-        <Row>
           <Col span={6} style={{ border: "1px solid #000", padding: "10px" }}>
-             <strong>Age as on 01.01.2024:</strong>
+            <strong>Date of Birth:</strong>
           </Col>
           <Col span={6} style={{ border: "1px solid #000", padding: "10px" }}>
-           {data.dob ? moment(data.dob).format("YYYY/MM/DD") : "N/A"}
+            {data.dob ? moment(data.dob).format("DD/MM/YYYY") : "N/A"}
+          </Col>
+          <Col span={6} style={{ border: "1px solid #000", padding: "10px" }}>
+            <strong>Gender</strong>
+          </Col>
+          <Col span={6} style={{ border: "1px solid #000", padding: "10px" }}>
+            {data.gender}
+          </Col>
+        </Row>
+
+        <Row>
+          <Col span={6} style={{ border: "1px solid #000", padding: "10px" }}>
+            <strong>Differently Abled:</strong>
+          </Col>
+          <Col span={6} style={{ border: "1px solid #000", padding: "10px" }}>
+            {data.differently_abled}
+          </Col>
+          <Col span={6} style={{ border: "1px solid #000", padding: "10px" }}>
+            <strong>Other Differently if:</strong>
+          </Col>
+          <Col span={6} style={{ border: "1px solid #000", padding: "10px" }}>
+            {data.differently_abled_others}
+          </Col>
+        </Row>
+        <Row>
+          <Col span={6} style={{ border: "1px solid #000", padding: "10px" }}>
+            <strong>Age as on 01.01.2024:</strong>
+          </Col>
+          <Col span={6} style={{ border: "1px solid #000", padding: "10px" }}>
+            {data.dob ? moment(data.dob).format("YYYY/MM/DD") : "N/A"}
           </Col>
           <Col span={6} style={{ border: "1px solid #000", padding: "10px" }}>
             <strong>Caste Category:</strong>
@@ -502,7 +502,7 @@ const PreviewForm = () => {
             >
               DECLARATION
             </Title>
-            <p style={{ height: "auto" }}>
+            <p style={{ height: "auto", fontWeight: "bold" }}>
               I confirm that the informations given in this form is true,
               complete and accurate to the best of my knowledge and belief and
               in case any of the above informations is found to be false or
@@ -510,14 +510,78 @@ const PreviewForm = () => {
               cancellation of the my candidature and BSEB can take legal action
               against me.
             </p>
-            <p style={{ height: "auto" }}>
+
+            <div style={{ textAlign: "right" }}>
+                <div
+                  style={{
+                    border: "1px solid black",
+                    width: "150px",
+                    height: "80px",
+                    marginBottom: "10px",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    overflow: "hidden",
+                    marginLeft:"auto"
+                  }}
+                >
+                  {data.sign ? (
+                    <img
+                      src={data.sign}
+                      alt="Student's Signature"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "contain",
+                      }}
+                    />
+                  ) : (
+                    <p>Loading...</p>
+                  )}
+                </div>
+                <p>Student's Signature</p>
+              </div>
+
+            <p style={{ height: "auto", fontWeight: "bold" }}>
               I declare that the above informations are true and as per the
               college record. The registration of the candidate may be allowed.
             </p>
+            <div style={{ textAlign: "right" }}>
+                <div
+                  style={{
+                    border: "1px solid black",
+                    width: "150px",
+                    height: "80px",
+                    marginBottom: "10px",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    overflow: "hidden",
+                   marginLeft:"auto"
+                   
+                  }}
+                >
+                  {/* {principalSignature ? (
+                    <img
+                      src={principalSignature}
+                      alt="Principal Signature"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "contain",
+                      }}
+                    />
+                  ) : (
+                    <p>Loading...</p>
+                  )} */}
+                </div>
+                <p>Principal's Signature</p>
+              </div>
           </Col>
         </Row>
+      
 
-        <Row>
+        {/* <Row>
           <Col
             style={{
               padding: "5px",
@@ -594,7 +658,10 @@ const PreviewForm = () => {
               </div>
             </div>
           </Col>
-        </Row>
+        </Row> */}
+
+
+
 
         <Row>
           <Col span={24} style={{ marginTop: "20px" }}>
