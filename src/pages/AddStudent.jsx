@@ -974,8 +974,8 @@ function AddStudent() {
                     >
                       {() => {
                         return (
-                          <div style={{ margin: "16px 0" }}>
-                            <img
+                          <div style={{ margin: "16px 0", height:"150px",width:"150px" ,border: "1px solid black",}}>
+                            {/* <img
                               src={`${form.getFieldValue([
                                 "principal_signature",
                               ])}?${performance.now()}`}
@@ -986,7 +986,7 @@ function AddStudent() {
                                 border: "1px solid black",
                                 objectFit: "contain",
                               }}
-                            />
+                            /> */}
                           </div>
                         );
                       }}
